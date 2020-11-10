@@ -48,6 +48,61 @@ operación seleccionada.
 #  Menu principal
 # ___________________________________________________
 
+def printMenu():
+    print("\n")
+    print("*******************************************")
+    print("Bienvenido")
+    print("1- Inicializar Analizador")
+    print("2- Cargar información de Citibke")
+    print("3- Requerimento 1")
+    print("4- Requerimento 2")
+    print("5- Requerimento 3")
+    print("6- Requerimento 4")
+    print("7- Requerimento 5")
+    print("8- Requerimiento 6")
+    print("0- Salir")
+    print("*******************************************")
+
 """
 Menu principal
 """
+while True:
+    printMenu()
+    inputs = input('Seleccione una opción para continuar\n>')
+
+    if int(inputs[0]) == 1:
+        print("\nInicializando....")
+        # cont es el controlador que se usará de acá en adelante
+        cont = controller.init()
+
+    elif int(inputs[0]) == 2:
+        controller.loadTrips(cont)
+        print()
+
+    elif int(inputs[0]) == 3:
+        station1 = input("Primera estación: ")
+        station2 = input("Segunda estación: ")
+        info = controller.req1(cont, station1, station2)
+        print("El número de componentes es:",info[0])
+        if info[1] == True:
+            print("Las estaciones "+station1+" y "+station2+" sí estan conectadas.")
+        else:
+            print("Las estaciones "+station1+" y "+station2+" no estan conectadas.")
+
+    elif int(inputs[0]) == 4:
+        print()
+
+    elif int(inputs[0]) == 5:
+        print()
+
+    elif int(inputs[0]) == 6:
+        print()
+
+    
+
+
+
+
+    else:
+        sys.exit(0)
+sys.exit(0)
