@@ -43,11 +43,92 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
+citibikeFile1 = "201801-1-citibike-tripdata.csv"
+citibikeFile2 = "201801-2-citibike-tripdata.csv"
+citibikeFile3 = "201801-3-citibike-tripdata.csv"
+citibikeFile4 = "201801-4-citibike-tripdata.csv"
 
 # ___________________________________________________
 #  Menu principal
 # ___________________________________________________
 
+def printMenu():
+    print("\n")
+    print("*******************************************")
+    print("Bienvenido")
+    print("1- Inicializar Analizador")
+    print("2- Cargar información de Citibke")
+    print("3- Requerimento 1")
+    print("4- Requerimento 2")
+    print("5- Requerimento 3")
+    print("6- Requerimento 4")
+    print("7- Requerimento 5")
+    print("8- Requerimiento 6")
+    print("0- Salir")
+    print("*******************************************")
+
+def optionTwo1():
+    controller.loadTrips(cont)
+    viajes = controller.totalTrips(cont)
+    numedges = controller.totalConnections(cont)
+    numvertex = controller.totalStations(cont)
+    print('Total viajes cargados: ' + str(viajes))
+    print('Numero de vertices: ' + str(numvertex))
+    print('Numero de arcos: ' + str(numedges))
+
+def optionTwo2():
+    controller.loadFile(cont, citibikeFile4)
+    viajes = controller.totalTrips(cont)
+    numedges = controller.totalConnections(cont)
+    numvertex = controller.totalStations(cont)
+    print('Total viajes cargados: ' + str(viajes))
+    print('Numero de vertices: ' + str(numvertex))
+    print('Numero de arcos: ' + str(numedges))
+
+def optionThree():
+    station1 = input("Primera estación: ")
+    station2 = input("Segunda estación: ")
+    info = controller.req1(cont, station1, station2)
+    print("El número de componentes es:",info[0])
+    if info[1] == True:
+         print("Las estaciones "+station1+" y "+station2+" sí estan conectadas.")
+    else:
+         print("Las estaciones "+station1+" y "+station2+" no estan conectadas.")
+
 """
 Menu principal
 """
+while True:
+    printMenu()
+    inputs = input('Seleccione una opción para continuar\n>')
+
+    if int(inputs[0]) == 1:
+        print("\nInicializando....")
+        # cont es el controlador que se usará de acá en adelante
+        cont = controller.init()
+
+    elif int(inputs[0]) == 2:
+        executiontime = timeit.timeit(optionTwo1, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+
+    elif int(inputs[0]) == 3:
+        executiontime = timeit.timeit(optionThree, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+
+    elif int(inputs[0]) == 4:
+        print()
+
+    elif int(inputs[0]) == 5:
+        print()
+
+    elif int(inputs[0]) == 6:
+        print()
+
+    
+
+
+
+
+    else:
+        sys.exit(0)
+sys.exit(0)
