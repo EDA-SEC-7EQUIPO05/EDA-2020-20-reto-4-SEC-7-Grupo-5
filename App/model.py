@@ -125,8 +125,7 @@ def sameCluster(clusters, station1, station2):
     return scc.stronglyConnected(clusters, station1, station2)
 
 def req3 (citibike):
-    vertex = at.BreadhtFisrtSearch(citibike["graph"])
-    return gr.degree(vertex)
+    return gr.vertices(citibike["graph"])
 
 
 # ==============================

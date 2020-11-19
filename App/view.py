@@ -30,6 +30,10 @@ import config
 from App import controller
 from DISClib.ADT import stack
 import timeit
+from DISClib.ADT.graph import gr
+from DISClib.ADT import map as m
+from DISClib.ADT import list as lt
+from DISClib.DataStructures import listiterator as it
 assert config
 
 """
@@ -96,8 +100,12 @@ def optionThree():
          print("Las estaciones "+station1+" y "+station2+" no estan conectadas.")
 
 def optionFive():
-    controller.req3(cont)
-
+    info=controller.req3(cont)
+    iterator=it.newIterator(info)
+    while it.hasNext(iterator):
+        element=it.next(iterator)
+        datos=gr.degree(element)
+    print(datos)
 
 """
 Menu principal
@@ -124,7 +132,7 @@ while True:
 
     elif int(inputs[0]) == 5:
         executiontime = timeit.timeit(optionFive, number=1)
-        print(executiontime)
+        print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 6:
         print()
