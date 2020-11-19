@@ -31,6 +31,9 @@ from DISClib.DataStructures import listiterator as it
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
+from DISClib.Algorithms.Graphs import bfs as at
+from DISClib.Algorithms.Graphs import dfo as wt
+from DISClib.Algorithms.Graphs import dfs as xt
 assert config
 
 """
@@ -48,7 +51,8 @@ def newAnalyzer():
     """
     try:
         citibike = {
-                    'graph': None,
+                    'graph': None, 
+                    'Num': 0
                     }
 
         citibike['graph'] = gr.newGraph(datastructure='ADJ_LIST',
@@ -70,7 +74,7 @@ def addTrip (citibike, trip):
     addStation(citibike,origin)
     addStation(citibike,destination)
     addConnection(citibike,origin,destination,duration)
-
+    citibike['Num'] += 1
 
 def addStation (citibike,stationId):
     """
@@ -86,12 +90,44 @@ def addConnection (citibike,origin,destination,duration):
     """
     edge = gr.getEdge(citibike ["graph"], origin, destination)
     if edge is None:
-        gr.addEdge(citibike["graph"], origin, destination, duration)
+        weight = [duration, 1]
+        gr.addEdge(citibike["graph"], origin, destination, weight)
+    else:
+        edge['weight'][0] = (edge['weight'][0]*edge['weight'][1] + duration)/(edge['weight'][1] + 1)
+        edge['weight'][1] += 1
     return citibike
 
 # ==============================
 # Funciones de consulta
 # ==============================
+
+def totalTrips(citibike):
+    return citibike['Num']
+
+def totalConnections(citibike):
+    graph = citibike["graph"]
+    return gr.numEdges(graph)
+
+def totalStations(citibike):
+    graph = citibike["graph"]
+    return gr.numVertices(graph)
+
+def req1(citibike, station1, station2):
+    clusters = scc.KosarajuSCC(citibike['graph'])
+    num = numClusters(clusters)
+    connected = sameCluster(clusters, station1, station2)
+    return (num, connected)
+
+def numClusters(clusters):
+    return scc.connectedComponents(clusters)
+
+def sameCluster(clusters, station1, station2):
+    return scc.stronglyConnected(clusters, station1, station2)
+
+def req3 (citibike):
+    vertex = at.BreadhtFisrtSearch(citibike["graph"])
+    return gr.degree(vertex)
+
 
 # ==============================
 # Funciones Helper
@@ -101,7 +137,8 @@ def addConnection (citibike,origin,destination,duration):
 # Funciones de Comparacion
 # ==============================
 
-def compareStations (stop,keyvaluestop):
+def compareStations (stop,
+keyvaluestop):
     """
     Compara dos estaciones
     """

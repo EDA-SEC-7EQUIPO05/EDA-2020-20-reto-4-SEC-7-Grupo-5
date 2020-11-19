@@ -43,6 +43,10 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
+citibikeFile1 = "201801-1-citibike-tripdata.csv"
+citibikeFile2 = "201801-2-citibike-tripdata.csv"
+citibikeFile3 = "201801-3-citibike-tripdata.csv"
+citibikeFile4 = "201801-4-citibike-tripdata.csv"
 
 # ___________________________________________________
 #  Menu principal
@@ -63,6 +67,38 @@ def printMenu():
     print("0- Salir")
     print("*******************************************")
 
+def optionTwo1():
+    controller.loadTrips(cont)
+    viajes = controller.totalTrips(cont)
+    numedges = controller.totalConnections(cont)
+    numvertex = controller.totalStations(cont)
+    print('Total viajes cargados: ' + str(viajes))
+    print('Numero de vertices: ' + str(numvertex))
+    print('Numero de arcos: ' + str(numedges))
+
+def optionTwo2():
+    controller.loadFile(cont, citibikeFile4)
+    viajes = controller.totalTrips(cont)
+    numedges = controller.totalConnections(cont)
+    numvertex = controller.totalStations(cont)
+    print('Total viajes cargados: ' + str(viajes))
+    print('Numero de vertices: ' + str(numvertex))
+    print('Numero de arcos: ' + str(numedges))
+
+def optionThree():
+    station1 = input("Primera estación: ")
+    station2 = input("Segunda estación: ")
+    info = controller.req1(cont, station1, station2)
+    print("El número de componentes es:",info[0])
+    if info[1] == True:
+         print("Las estaciones "+station1+" y "+station2+" sí estan conectadas.")
+    else:
+         print("Las estaciones "+station1+" y "+station2+" no estan conectadas.")
+
+def optionFive():
+    controller.req3(cont)
+
+
 """
 Menu principal
 """
@@ -76,26 +112,23 @@ while True:
         cont = controller.init()
 
     elif int(inputs[0]) == 2:
-        print()
+        executiontime = timeit.timeit(optionTwo1, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 3:
-        print()
+        executiontime = timeit.timeit(optionThree, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 4:
         print()
 
     elif int(inputs[0]) == 5:
-        print()
+        executiontime = timeit.timeit(optionFive, number=1)
+        print(executiontime)
 
     elif int(inputs[0]) == 6:
         print()
 
-    
-
-
-
-
     else:
         sys.exit(0)
 sys.exit(0)
-
