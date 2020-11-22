@@ -99,13 +99,21 @@ def optionThree():
     else:
          print("Las estaciones "+station1+" y "+station2+" no estan conectadas.")
 
-def optionFive():
+def optionFive(cont):
+    lista=[]
+    lista2=[]
     info=controller.req3(cont)
     iterator=it.newIterator(info)
     while it.hasNext(iterator):
         element=it.next(iterator)
-        datos=gr.degree(element)
-    print(datos)
+        lista.append(element)
+
+    for i in lista:
+        vertex=i
+        valor=gr.indegree(cont,vertex)
+        lista2.append(valor)
+
+    print(lista2)
 
 """
 Menu principal
@@ -131,7 +139,7 @@ while True:
         print()
 
     elif int(inputs[0]) == 5:
-        executiontime = timeit.timeit(optionFive, number=1)
+        executiontime = timeit.timeit(optionFive(cont), number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 6:
