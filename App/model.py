@@ -124,8 +124,38 @@ def numClusters(clusters):
 def sameCluster(clusters, station1, station2):
     return scc.stronglyConnected(clusters, station1, station2)
 
-def req3 (citibike):
-    return gr.vertices(citibike["graph"])
+def indegreereq3 (citibike):
+    lista=[]
+    vertices=gr.vertices(citibike["graph"])
+    iterator=it.newIterator(vertices)
+    while it.hasNext(iterator):
+        element=it.next(iterator)
+        valor=gr.indegree(citibike["graph"],element)
+        lista.append(valor)
+    orden=sorted(lista)
+    return orden
+
+def outdegreereq3 (citibike):
+    lista1=[]
+    vertices=gr.vertices(citibike["graph"])
+    iterator=it.newIterator(vertices)
+    while it.hasNext(iterator):
+        element=it.next(iterator)
+        valor=gr.outdegree(citibike["graph"],element)
+        lista1.append(valor)
+    orden1=sorted(lista1)
+    return orden1
+
+def degreereq3 (citibike):
+    lista2=[]
+    vertices=gr.vertices(citibike["graph"])
+    iterator=it.newIterator(vertices)
+    while it.hasNext(iterator):
+        element=it.next(iterator)
+        valor=gr.degree(citibike["graph"],element)
+        lista2.append(valor)
+    orden2=sorted(lista2)
+    return orden2
 
 
 # ==============================
