@@ -401,3 +401,8 @@ def adjacentEdges(graph, vertex):
         return lst
     except Exception as exp:
         error.reraise(exp, 'ajlist:adjacentEdges')
+
+def count(edge):
+    operacion=e.addEdgeCount(edge)
+    return operacion
+    
