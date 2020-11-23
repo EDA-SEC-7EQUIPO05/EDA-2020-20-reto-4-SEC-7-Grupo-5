@@ -34,6 +34,7 @@ from DISClib.Utils import error as error
 from DISClib.Algorithms.Graphs import bfs as at
 from DISClib.Algorithms.Graphs import dfo as wt
 from DISClib.Algorithms.Graphs import dfs as xt
+from DISClib.DataStructures import graphstructure as mt
 assert config
 
 """
@@ -96,7 +97,7 @@ def addConnection (citibike,origin,destination,duration):
     else:
         edge['weight'][0] = (edge['weight'][0]*edge['weight'][1] + duration)/(edge['weight'][1] + 1)
         edge['weight'][1] += 1
-        count+=1
+
     return citibike
 
 # ==============================

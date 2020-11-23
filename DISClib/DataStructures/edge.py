@@ -77,11 +77,5 @@ def compareedges(edge1, edge2):
             return True
     return False
 
-def count(edge):
-    return edge["count"]
 
-def addEdgeCount(edge):
-    edge["count"]+=1
-    return edge
-    
 
