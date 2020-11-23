@@ -91,6 +91,7 @@ def addConnection (citibike,origin,destination,duration):
     edge = gr.getEdge(citibike ["graph"], origin, destination)
     if edge is None:
         weight = [duration, 1]
+        count+=1
         gr.addEdge(citibike["graph"], origin, destination, weight)
     else:
         edge['weight'][0] = (edge['weight'][0]*edge['weight'][1] + duration)/(edge['weight'][1] + 1)
