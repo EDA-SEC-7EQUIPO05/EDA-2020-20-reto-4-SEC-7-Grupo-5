@@ -100,11 +100,8 @@ def optionThree():
          print("Las estaciones "+station1+" y "+station2+" no estan conectadas.")
 
 def optionFive():
-    info=controller.indegreereq3(cont)
-    info1=controller.outdegreereq3(cont)
-    info2=controller.degreereq3(cont)
-
-    print(info2)
+    info=controller.req3(cont)
+    print(info)
 """
 Menu principal
 """

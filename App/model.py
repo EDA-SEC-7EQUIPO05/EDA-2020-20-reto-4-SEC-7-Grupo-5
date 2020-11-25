@@ -35,6 +35,7 @@ from DISClib.Algorithms.Graphs import bfs as at
 from DISClib.Algorithms.Graphs import dfo as wt
 from DISClib.Algorithms.Graphs import dfs as xt
 from DISClib.DataStructures import graphstructure as mt
+from DISClib.DataStructures import mapentry as me
 assert config
 
 """
@@ -53,13 +54,23 @@ def newAnalyzer():
     try:
         citibike = {
                     'graph': None, 
-                    'Num': 0
+                    'Num': 0,
+                    "arrivals":None
+
                     }
 
         citibike['graph'] = gr.newGraph(datastructure='ADJ_LIST',
                                               directed=True,
                                               size=1000,
+                                              comparefunction=compareStations) 
+
+        citibike["salida"] = m.newMap(numelements=2000,
+                                              maptype="PROBING",
+                                              comparefunction=compareStations) 
+        citibike["llegada"] = m.newMap(numelements=2000,
+                                              maptype="PROBING",
                                               comparefunction=compareStations)
+          
         return citibike
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
@@ -83,23 +94,37 @@ def addStation (citibike,stationId):
     """
     if not gr.containsVertex (citibike["graph"], stationId):
         gr.insertVertex( citibike["graph"],stationId)
+    if not m.contains(citibike["salida"],stationId):
+        m.put(citibike["salida"],stationId,{"salidas":0})
+    if not m.contains(citibike["llegada"],stationId):
+        m.put(citibike["llegada"],stationId,{"llegadas":0})
     return citibike
 
 def addConnection (citibike,origin,destination,duration):
     """
     Adiciona un arco entre dos estaciones 
     """
+    originEntry= me.getValue(m.get(citibike["salida"],origin))
+    originEntry["salidas"]+=1
+    destinyEntry=me.getValue(m.get(citibike["llegada"],destination))
+    destinyEntry["llegadas"] +=1
     edge = gr.getEdge(citibike ["graph"], origin, destination)
     if edge is None:
         weight = [duration, 1]
-        count=1
-        gr.addEdge(citibike["graph"], origin, destination, weight,count)
+        gr.addEdge(citibike["graph"], origin, destination, weight)
     else:
         edge['weight'][0] = (edge['weight'][0]*edge['weight'][1] + duration)/(edge['weight'][1] + 1)
         edge['weight'][1] += 1
 
     return citibike
 
+def addtrips (citibke,stationId):
+     try:
+        if not gr.containsVertex(citibke['graph'], stationId):
+            gr.insertVertex(citibke['graph'], stationId)
+        return analyzer
+     except Exception as exp:
+        error.reraise(exp, 'model:addstop')
 # ==============================
 # Funciones de consulta
 # ==============================
@@ -127,38 +152,21 @@ def numClusters(clusters):
 def sameCluster(clusters, station1, station2):
     return scc.stronglyConnected(clusters, station1, station2)
 
-def indegreereq3 (citibike):
+def req3 (citibike):
     lista=[]
-    vertices=gr.vertices(citibike["graph"])
-    iterator=it.newIterator(vertices)
-    while it.hasNext(iterator):
-        element=it.next(iterator)
-        valor=gr.indegree(citibike["graph"],element)
-        lista.append(valor)
-    orden=sorted(lista)
-    return orden
+    llaves=m.keySet(citibike["salida"])
+    valores=m.valueSet(citibike["salida"])
+    iterator_llaves=it.newIterator(llaves)
+    iterator_valores=it.newIterator(valores)
+    while it.hasNext(iterator_llaves) and it.hasNext(iterator_valores):
+        key = it.next(iterator_llaves)
+        value = it.next(iterator_valores)
+        lista.append([key,value])
 
-def outdegreereq3 (citibike):
-    lista1=[]
-    vertices=gr.vertices(citibike["graph"])
-    iterator=it.newIterator(vertices)
-    while it.hasNext(iterator):
-        element=it.next(iterator)
-        valor=gr.outdegree(citibike["graph"],element)
-        lista1.append(valor)
-    orden1=sorted(lista1)
-    return orden1
-
-def degreereq3 (citibike):
-    lista2=[]
-    vertices=gr.vertices(citibike["graph"])
-    iterator=it.newIterator(vertices)
-    while it.hasNext(iterator):
-        element=it.next(iterator)
-        valor=gr.degree(citibike["graph"],element)
-        lista2.append(valor)
-    orden2=sorted(lista2)
-    return orden2
+    for i in lista:
+        valor=i
+    
+    return valor
 
 
 # ==============================
