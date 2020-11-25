@@ -29,6 +29,7 @@ import sys
 import config
 from App import controller
 from DISClib.ADT import stack
+from DISClib.DataStructures import listiterator as it
 import timeit
 assert config
 
@@ -43,6 +44,10 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
+citibikeFile1 = "201801-1-citibike-tripdata.csv"
+citibikeFile2 = "201801-2-citibike-tripdata.csv"
+citibikeFile3 = "201801-3-citibike-tripdata.csv"
+citibikeFile4 = "201801-4-citibike-tripdata.csv"
 
 # ___________________________________________________
 #  Menu principal
@@ -63,6 +68,68 @@ def printMenu():
     print("0- Salir")
     print("*******************************************")
 
+def optionTwo1():
+    controller.loadTrips(cont)
+    viajes = controller.totalTrips(cont)
+    numedges = controller.totalConnections(cont)
+    numvertex = controller.totalStations(cont)
+    print('Total viajes cargados: ' + str(viajes))
+    print('Numero de vertices: ' + str(numvertex))
+    print('Numero de arcos: ' + str(numedges))
+
+def optionTwo2():
+    #controller.loadFile(cont, citibikeFile4)
+    viajes = controller.totalTrips(cont)
+    numedges = controller.totalConnections(cont)
+    numvertex = controller.totalStations(cont)
+    print('Total viajes cargados: ' + str(viajes))
+    print('Numero de vertices: ' + str(numvertex))
+    print('Numero de arcos: ' + str(numedges))
+
+
+def optionThree():
+    station1 = input("Primera estación: ")
+    station2 = input("Segunda estación: ")
+    info = controller.req1(cont, station1, station2)
+    print("El número de componentes es:",info[0])
+    if info[1] == True:
+         print("Las estaciones "+station1+" y "+station2+" sí estan conectadas.")
+    else:
+         print("Las estaciones "+station1+" y "+station2+" no estan conectadas.")
+
+def optionSix():
+    station = input("Estación de salida: ")
+    tiempo = int(input("Tiempo de resistencia: "))
+    info = controller.req4(cont, station, tiempo)
+    infoIterator = it.newIterator(info)
+    con = 1
+    while it.hasNext(infoIterator):
+        elemento = it.next(infoIterator)
+        print('Opción', con)
+        print(elemento)
+        print('*************************')
+        con +=1
+
+def optionSeven():
+    age = int(input("Edad de consulta: "))
+    info = controller.req5(cont, age)
+    if info is None:
+        print("No hay información de esa edad.")
+    elif info[0]:
+        print("Primera estación:", info[1]['first']["vertexA"])
+        print("Última estación:", info[1]['last']["vertexB"])
+        iterator = it.newIterator(info[1]['route'])
+        print("Ruta:")
+        while it.hasNext(iterator):
+            elem = it.next(iterator)
+            print("\t", elem['vertexA'])
+        print("\t", info[1]['last']["vertexB"])
+    else:
+        print("Noy hay camino entre las estaciones más populares. Estas son:", info[1],"-",info[2])
+
+
+
+
 """
 Menu principal
 """
@@ -76,18 +143,13 @@ while True:
         cont = controller.init()
 
     elif int(inputs[0]) == 2:
-        controller.loadTrips(cont)
-        print()
+        executiontime = timeit.timeit(optionTwo1, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+        #print(cont)
 
     elif int(inputs[0]) == 3:
-        station1 = input("Primera estación: ")
-        station2 = input("Segunda estación: ")
-        info = controller.req1(cont, station1, station2)
-        print("El número de componentes es:",info[0])
-        if info[1] == True:
-            print("Las estaciones "+station1+" y "+station2+" sí estan conectadas.")
-        else:
-            print("Las estaciones "+station1+" y "+station2+" no estan conectadas.")
+        executiontime = timeit.timeit(optionThree, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 4:
         print()
@@ -96,12 +158,12 @@ while True:
         print()
 
     elif int(inputs[0]) == 6:
-        print()
+        executiontime = timeit.timeit(optionSix, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
 
-    
-
-
-
+    elif int(inputs[0]) == 7:
+        executiontime = timeit.timeit(optionSeven, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
 
     else:
         sys.exit(0)

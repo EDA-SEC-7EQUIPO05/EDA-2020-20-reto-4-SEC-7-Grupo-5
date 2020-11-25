@@ -66,9 +66,10 @@ def loadFile(citibike, tripfile):
     """
     """
     tripfile = cf.data_dir + tripfile
-    input_file = csv.DictReader(open(tripfile, encoding="utf-8"),
+    input_file = csv.DictReader(open(tripfile, encoding="utf-8-sig"),
                                 delimiter=",")
     for trip in input_file:
+        #print(trip)
         model.addTrip(citibike, trip)
     return citibike
 
@@ -76,5 +77,20 @@ def loadFile(citibike, tripfile):
 #  Funciones para consultas
 # ___________________________________________________
 
+def totalTrips(citibike):
+    return model.totalTrips(citibike)
+    
+def totalConnections(citibike):
+    return model.totalConnections(citibike)
+
+def totalStations(citibike):
+    return model.totalStations(citibike)
+
 def req1(citibike, station1, station2):
     return model.req1(citibike, station1, station2)
+
+def req4(citibike, station, time):
+    return model.req4(citibike, station, time)
+
+def req5(citibike, age):
+    return model.req5(citibike, age)
