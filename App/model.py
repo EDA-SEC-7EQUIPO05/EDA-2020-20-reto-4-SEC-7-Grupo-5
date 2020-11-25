@@ -36,6 +36,7 @@ from DISClib.Algorithms.Graphs import dfo as wt
 from DISClib.Algorithms.Graphs import dfs as xt
 from DISClib.DataStructures import graphstructure as mt
 from DISClib.DataStructures import mapentry as me
+from itertools import zip_longest
 assert config
 
 """
@@ -152,8 +153,10 @@ def numClusters(clusters):
 def sameCluster(clusters, station1, station2):
     return scc.stronglyConnected(clusters, station1, station2)
 
-def req3 (citibike):
+def req3primero (citibike):
     lista=[]
+    lista2=[]
+    lista3=[]
     llaves=m.keySet(citibike["salida"])
     valores=m.valueSet(citibike["salida"])
     iterator_llaves=it.newIterator(llaves)
@@ -161,13 +164,163 @@ def req3 (citibike):
     while it.hasNext(iterator_llaves) and it.hasNext(iterator_valores):
         key = it.next(iterator_llaves)
         value = it.next(iterator_valores)
-        lista.append([key,value])
+        lista.append(value)
+        lista2.append([key,value])
 
     for i in lista:
         valor=i
-    
-    return valor
+        for k in valor:
+            numeros=valor[k]
+            lista3.append(numeros)
+    lista3.sort()
+    mayor=max(lista3)
+    eliminacion=lista3.remove(mayor)
+    mayor1=max(lista3)
+    eliminacion1=lista3.remove(mayor1)
+    mayor2=max(lista3)
 
+    for i in lista:
+        valor=i
+        for k in valor:
+            numeros=valor[k]
+            if numeros==mayor:
+                respuesta=valor
+            elif numeros==mayor1:
+                respuesta1=valor
+            elif numeros==mayor2:
+                respuesta2=valor
+
+    final=respuesta
+    final1=respuesta1
+    final2=respuesta2
+
+    for u in lista2:
+        valor=u
+        for v in valor:
+            solucion=v
+            opcion=final
+            opcion1=final1
+            opcion2=final2
+            if solucion==opcion:
+                ultima=valor
+            elif solucion==opcion1:
+                ultima1=valor
+            elif solucion==opcion2:
+                ultima2=valor
+    return (ultima[0],ultima1[0],ultima2[0])
+
+def req3segundo (citibike):
+    lista=[]
+    lista2=[]
+    lista3=[]
+    llaves=m.keySet(citibike["llegada"])
+    valores=m.valueSet(citibike["llegada"])
+    iterator_llaves=it.newIterator(llaves)
+    iterator_valores=it.newIterator(valores)
+    while it.hasNext(iterator_llaves) and it.hasNext(iterator_valores):
+        key = it.next(iterator_llaves)
+        value = it.next(iterator_valores)
+        lista.append(value)
+        lista2.append([key,value])
+
+    for i in lista:
+        valor=i
+        for k in valor:
+            numeros=valor[k]
+            lista3.append(numeros)
+    lista3.sort()
+    mayor=max(lista3)
+    eliminacion=lista3.remove(mayor)
+    mayor1=max(lista3)
+    eliminacion1=lista3.remove(mayor1)
+    mayor2=max(lista3)
+
+    for i in lista:
+        valor=i
+        for k in valor:
+            numeros=valor[k]
+            if numeros==mayor:
+                respuesta=valor
+            elif numeros==mayor1:
+                respuesta1=valor
+            elif numeros==mayor2:
+                respuesta2=valor
+
+    final=respuesta
+    final1=respuesta1
+    final2=respuesta2
+
+    for u in lista2:
+        valor=u
+        for v in valor:
+            solucion=v
+            opcion=final
+            opcion1=final1
+            opcion2=final2
+            if solucion==opcion:
+                ultima=valor
+            elif solucion==opcion1:
+                ultima1=valor
+            elif solucion==opcion2:
+                ultima2=valor
+    return (ultima[0],ultima1[0],ultima2[0])
+  
+def req3tercero (citibike):
+    dic={}
+    lista=[]
+    lista2=[]
+    lista5=[]
+    llaves=m.keySet(citibike["llegada"])
+    valores=m.valueSet(citibike["llegada"])
+    iterator_llaves=it.newIterator(llaves)
+    iterator_valores=it.newIterator(valores)
+    while it.hasNext(iterator_llaves) and it.hasNext(iterator_valores):
+        key = it.next(iterator_llaves)
+        value = it.next(iterator_valores)
+        lista.append(value)
+        lista2.append([key,value])
+
+    for i in lista:
+        valor=i
+        for k in valor:
+            numeros=valor[k]
+            lista5.append(numeros)
+
+    lista3=[]
+    lista4=[]
+    lista6=[]
+    llaves1=m.keySet(citibike["salida"])
+    valores1=m.valueSet(citibike["salida"])
+    iterator_llaves1=it.newIterator(llaves1)
+    iterator_valores1=it.newIterator(valores1)
+    while it.hasNext(iterator_llaves1) and it.hasNext(iterator_valores1):
+        key1 = it.next(iterator_llaves1)
+        value1 = it.next(iterator_valores1)
+        lista3.append(value1)
+        lista4.append([key1,value1])
+
+    for i in lista:
+        valor=i
+        for k in valor:
+            numeros=valor[k]
+            lista6.append(numeros)
+    
+    mayor, menor = (lista5, lista6) if len(lista5) >= len(lista6) else (lista6, lista5)
+    lista7=[]
+    for i, _ in enumerate(mayor):
+        if i + 1 > len(menor):
+            lista7.append(mayor[i])
+        else:
+            lista7.append(mayor[i] + menor[i])
+
+    lista8=[]
+    for i in lista7:
+        dic[key]=dic.get(key,i)
+        lista8.append(dic)
+    
+    return lista8
+
+            
 
 # ==============================
 # Funciones Helper

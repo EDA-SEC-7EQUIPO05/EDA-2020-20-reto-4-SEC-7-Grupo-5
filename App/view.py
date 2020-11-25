@@ -100,8 +100,10 @@ def optionThree():
          print("Las estaciones "+station1+" y "+station2+" no estan conectadas.")
 
 def optionFive():
-    info=controller.req3(cont)
-    print(info)
+    info1=controller.req3primero(cont)
+    info2=controller.req3segundo(cont)
+
+    print("Las estaciones con más viajes de salida son: "+str(info1)+" "+"Y las estaciones con mas viajes de llegada son: "+str(info2))
 """
 Menu principal
 """

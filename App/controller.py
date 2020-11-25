@@ -88,5 +88,12 @@ def totalStations(citibike):
 def req1(citibike, station1, station2):
     return model.req1(citibike, station1, station2)
 
-def req3(citibike):
-    return model.req3(citibike)
+def req3primero(citibike):
+    return model.req3primero(citibike)
+
+def req3segundo(citibike):
+    return model.req3segundo(citibike)
+
+def req3tercero(citibike):
+    return model.req3tercero(citibike)
+
