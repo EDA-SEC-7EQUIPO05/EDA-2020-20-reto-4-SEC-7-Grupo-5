@@ -43,7 +43,6 @@ def Dijkstra(graph, source):
     Args:
         graph: El grafo de busqueda
         source: El vertice de inicio
-
     Returns:
         Un nuevo grafo vacío
     Raises:
@@ -82,9 +81,9 @@ def relax(search, edge):
         visited_v = map.get(search['visited'], v)['value']
         visited_w = map.get(search['visited'], w)['value']
         distw = visited_w['distTo']
-        distv = visited_v['distTo'] + e.weight(edge)
+        distv = visited_v['distTo'] + e.weight(edge)[0]
         if (visited_w is None) or (distw > distv):
-            distow = visited_v['distTo'] + e.weight(edge)
+            distow = visited_v['distTo'] + e.weight(edge)[0]
             map.put(search['visited'],
                     w,
                     {'marked': True, 'edgeTo': edge, 'distTo': distow}

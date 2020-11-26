@@ -97,3 +97,8 @@ def req3segundo(citibike):
 def req3tercero(citibike):
     return model.req3tercero(citibike)
 
+def req4(citibike, station, time):
+    return model.req4(citibike, station, time)
+
+def req5(citibike, age):
+    return model.req5(citibike, age)
