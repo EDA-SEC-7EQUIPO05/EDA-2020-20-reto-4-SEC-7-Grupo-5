@@ -102,3 +102,6 @@ def req4(citibike, station, time):
 
 def req5(citibike, age):
     return model.req5(citibike, age)
+
+def req7(citibike, ageRange):
+    return model.req7(citibike, ageRange)

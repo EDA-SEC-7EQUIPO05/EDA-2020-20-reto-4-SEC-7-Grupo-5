@@ -62,14 +62,17 @@ def printMenu():
     print("Bienvenido")
     print("1- Inicializar Analizador")
     print("2- Cargar información de Citibke")
-    print("3- Requerimento 1")
-    print("4- Requerimento 2")
-    print("5- Requerimento 3")
-    print("6- Requerimento 4")
-    print("7- Requerimento 5")
+    print("3- Requerimiento 1")
+    print("4- Requerimiento 2")
+    print("5- Requerimiento 3")
+    print("6- Requerimiento 4")
+    print("7- Requerimiento 5")
     print("8- Requerimiento 6")
+    print("9- Requerimiento 7")
+    print("10- Requerimiento 8")
     print("0- Salir")
     print("*******************************************")
+
 
 def optionTwo1():
     controller.loadTrips(cont)
@@ -135,6 +138,23 @@ def optionSeven():
     else:
         print("Noy hay camino entre las estaciones más populares. Estas son:", info[1],"-",info[2])
 
+def optionNine():
+    ageRange = input("rango de edades de consulta: ")
+    info = controller.req7(cont, ageRange)
+    if info is None:
+        print("No hay información de este rango.")
+    else:
+        infoIterator = it.newIterator(info)
+        print('Las estaciones adyacentes más utilizadas son: ')
+        while it.hasNext(infoIterator):
+            elem = it.next(infoIterator)
+            ma = elem['age']
+            entry = map.get(ma, ageRange)
+            value = entry['value']
+            print(elem['vertexA'], '-->',elem['vertexB'], 'viajes: ',value['num'])
+
+
+
 """
 Menu principal
 """
@@ -169,6 +189,17 @@ while True:
     elif int(inputs[0]) == 7:
         executiontime = timeit.timeit(optionSeven, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
+
+    elif int(inputs[0]) == 8:
+        print()
+
+    elif int(inputs[0]) == 9:
+        executiontime = timeit.timeit(optionNine, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+
+    elif int(inputs[0]) == 10:
+        print()
+
 
 
     else:

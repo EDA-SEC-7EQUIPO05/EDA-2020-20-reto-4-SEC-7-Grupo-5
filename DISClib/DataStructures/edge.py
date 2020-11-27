@@ -32,14 +32,14 @@ Este código está basado en las implementaciones propuestas en:
 """
 
 
-def newEdge(va, vb, weight=0,count=1):
+def newEdge(va, vb, weight=0, ageMap=None):
     """
     Crea un nuevo arco entrelos vertices va y vb
     """
     edge = {'vertexA': va,
             'vertexB': vb,
             'weight': weight,
-             'count':count
+            'age': ageMap
             }
     return edge
 
@@ -76,6 +76,3 @@ def compareedges(edge1, edge2):
         if other(edge1, e1v) == other(edge2, e2v):
             return True
     return False
-
-
-
