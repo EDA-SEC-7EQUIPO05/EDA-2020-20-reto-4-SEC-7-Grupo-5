@@ -32,13 +32,14 @@ Este código está basado en las implementaciones propuestas en:
 """
 
 
-def newEdge(va, vb, weight=0):
+def newEdge(va, vb, weight=0, ageMap=None):
     """
     Crea un nuevo arco entrelos vertices va y vb
     """
     edge = {'vertexA': va,
             'vertexB': vb,
-            'weight': weight
+            'weight': weight,
+            'age': ageMap
             }
     return edge
 

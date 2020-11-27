@@ -28,6 +28,7 @@ from DISClib.ADT.graph import gr
 from DISClib.ADT import map as m
 from DISClib.ADT import list as lt
 from DISClib.ADT import stack as st
+from DISClib.ADT import queue as q
 from DISClib.DataStructures import listiterator as it
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Graphs import scc
@@ -76,10 +77,15 @@ def addTrip (citibike, trip):
     destination = trip["end station id"]
     duration = int(trip["tripduration"])
     birthDate = int(trip['birth year'])
+    user = trip["usertype"]
+    if user == 'Customer':
+        user = True
+    else:
+        user = False
     age = ageCalculator(birthDate)
     addStation(citibike,origin)
     addStation(citibike,destination)
-    addConnection(citibike,origin,destination,duration)
+    addConnection(citibike,origin,destination,duration,age, user)
     addAgeTrip(citibike, origin, destination, age)
     citibike['Num'] += 1
 
@@ -95,7 +101,7 @@ def addStation (citibike,stationId):
         m.put(citibike["trips"], stationId, {'salidas': {'num': 0, 'age': originAgeMap}, 'llegadas':  {'num': 0, 'age': destinyAgeMap}})
     return citibike
 
-def addConnection (citibike,origin,destination,duration):
+def addConnection (citibike,origin,destination,duration,age, user):
     """
     Adiciona un arco entre dos estaciones 
     """
@@ -106,11 +112,28 @@ def addConnection (citibike,origin,destination,duration):
     edge = gr.getEdge(citibike ["graph"], origin, destination)
     if edge is None:
         weight = [duration, 1]
+        ageMap = newAgeMap()
         gr.addEdge(citibike["graph"], origin, destination, weight)
+        edge = gr.getEdge(citibike["graph"], origin, destination)
+        edge['age'] = ageMap
+        if user:
+            edge_1 = gr.getEdge(citibike["graph"], origin, destination)
+            Entry = m.get(edge_1['age'], representativeAge(age))
+            Value = Entry['value']
+            Value['num'] += 1
     else:
         edge['weight'][0] = (edge['weight'][0]*edge['weight'][1] + duration)/(edge['weight'][1] + 1)
         edge['weight'][1] += 1
+        if user:
+            ageMapEntry = me.getValue(m.get(edge['age'], representativeAge(age)))
+            ageMapEntry['num'] += 1
     return citibike
+
+def newAgeMap():
+    ageMap = m.newMap(numelements=8,maptype='CHAINING',loadfactor=2,comparefunction=compareAges)
+    for i in range(5,75,10):
+        m.put(ageMap, representativeAge(i), {'num': 0})
+    return ageMap
 
 def addAgeTrip(citibike, origin, destination, age):
     rep_age = representativeAge(age)
@@ -196,9 +219,27 @@ def req5(citibike, age):
     else:
         return False, max_out_st, max_in_st
     
-    
+def req7(citibike, ageRange):
+    maxEdges = lt.newList()
+    maxEdgeNum = 0
+    edges = gr.edges(citibike['graph'])
+    edgeIterator = it.newIterator(edges)
+    while it.hasNext(edgeIterator):
+        edge = it.next(edgeIterator) 
+        ageMap = edge['age']
+        ageMapEntry = m.get(ageMap, ageRange)
+        num = ageMapEntry['value']['num']
+        if num == maxEdgeNum:
+            lt.addLast(maxEdges, edge)
+        elif num > maxEdgeNum:
+            maxEdgeNum = num
+            maxEdges = lt.newList()
+            lt.addLast(maxEdges, edge)
+    if maxEdgeNum == 0:
+        return None
+    else:
+        return maxEdges
 
-    
 
 
 
