@@ -125,7 +125,7 @@ def addTrip (citibike, trip):
     addUbication(citibike, origin, lon_origin, lat_origin)
     addUbication(citibike, destination, lon_destination, lat_destination)
     addAgeTrip(citibike,origin,destination,age)
-    addBikeID(citibike, bikeID, date, duration, origin)
+    addBikeID(citibike, bikeID, date, duration, origin, destination)
     citibike['Num'] += 1
 
 def addStation (citibike,stationId):
@@ -208,15 +208,15 @@ def addAgeTrip(citibike, origin, destination, age):
     else:
         me.getValue(m.get(destinyAgeMap, rep_age))['num'] += 1
 
-def addBikeID(citibike, bikeID, date, duration, stationID):
+def addBikeID(citibike, bikeID, date, duration, stationID1, stationID2):
     if not m.contains(citibike["bikeID"], bikeID):
-        info = [[[date, stationID]], [duration]]
+        info = [[[date, str(stationID1) + " --> " + str(stationID2)]], [duration]]
         m.put(citibike["bikeID"],  bikeID, [info, bikeID])
     else:
         entry = m.get(citibike["bikeID"],  bikeID)
         value = me.getValue(entry)
         infoo = value[0]
-        infoo[0].append([date, stationID])
+        infoo[0].append([date, str(stationID1) + " --> " + str(stationID2)])
         infoo[1].append(duration)
 
 # ==============================
