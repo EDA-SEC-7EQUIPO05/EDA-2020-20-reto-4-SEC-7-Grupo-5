@@ -24,6 +24,7 @@
  *
  """
 import config
+from math import inf
 from DISClib.ADT.graph import gr
 from DISClib.ADT import map as m
 from DISClib.ADT import list as lt
@@ -31,6 +32,7 @@ from DISClib.DataStructures import listiterator as it
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
+from DISClib.calculos import distances as c
 assert config
 
 """
@@ -64,13 +66,20 @@ def newAnalyzer():
 
 def addTrip (citibike, trip):
     """
+    Adiciona la información de un viaje al grafo
     """
-    origin = trip["start station id"]
-    destination = trip["end station id"]
+    id_origin = str(trip["start station id"])
+    id_destination = str(trip["end station id"])
+    lat_origin = str(trip["start station latitude"])
+    lon_origin = str(trip["start station longitude"])
+    lat_destination = str(trip["end station latitude"])
+    lon_destination = str(trip["end station longitude"])
+    origin = id_origin + ";" + lon_origin +  ";" + lat_origin
+    destination = id_destination + ";" + lon_destination +  ";" + lat_destination
     duration = int(trip["tripduration"])
-    addStation(citibike,origin)
-    addStation(citibike,destination)
-    addConnection(citibike,origin,destination,duration)
+    addStation(citibike, origin)
+    addStation(citibike, destination)
+    addConnection(citibike, origin, destination, duration)
     citibike['Num'] += 1
 
 def addStation (citibike,stationId):
@@ -109,22 +118,71 @@ def totalStations(citibike):
     graph = citibike["graph"]
     return gr.numVertices(graph)
 
-def req1(citibike, station1, station2):
-    clusters = scc.KosarajuSCC(citibike['graph'])
-    num = numClusters(clusters)
-    connected = sameCluster(clusters, station1, station2)
-    return (num, connected)
-
 def numClusters(clusters):
     return scc.connectedComponents(clusters)
 
 def sameCluster(clusters, station1, station2):
     return scc.stronglyConnected(clusters, station1, station2)
 
+def req1(citibike, station1, station2):
+    clusters = scc.KosarajuSCC(citibike['graph'])
+    num = numClusters(clusters)
+    connected = sameCluster(clusters, station1, station2)
+    return (num, connected)
+
+def req6(citibike, lon1, lat1, lon2, lat2):
+    mapa = {
+        "masCercanaStart": None,
+        "masCercanaEnd": None,
+        "tiempo": 0,
+        "estaciones": None
+    }
+    StartStation = estacionMasCercana(citibike, lon1, lat1)
+    EndStation = estacionMasCercana(citibike, lon2, lat2)
+    search = djk.Dijkstra(citibike["graph"], StartStation)
+    if djk.hasPathTo(search, EndStation):
+        mapa["tiempo"] = str(djk.distTo(search, EndStation))
+        mapa["estaciones"] = djk.pathTo(search, EndStation)
+    else:
+        mapa["tiempo"] = "Infinito"
+    mapa["masCercanaStart"] = StartStation.split(";")[0]
+    mapa["masCercanaEnd"] = EndStation.split(";")[0]
+    return mapa
+
+def estacionMasCercanaStart(mapa):
+    return mapa["masCercanaStart"]
+
+def estacionMasCercanaEnd(mapa):
+    return mapa["masCercanaEnd"]
+
+def tiempoRecorrido(mapa):
+    return mapa["tiempo"]
+
+def estacionesRecorrido(mapa):
+    return mapa["estaciones"]
 
 # ==============================
 # Funciones Helper
 # ==============================
+
+def estacionMasCercana(citibike, lon_user, lat_user):
+    station = None
+    estaciones = gr.vertices(citibike['graph'])
+    iterator = it.newIterator(estaciones)
+    menor = inf
+    while it.hasNext(iterator):
+        estacion = it.next(iterator)
+        estacion = estacion.split(";")
+        id_station = estacion[0]
+        lon_station = estacion[1]
+        lat_station = estacion[2]
+        lon = abs(float(lon_station) - float(lon_user))
+        lat = abs(float(lat_station) - float(lat_user))
+        distance = c.calcularDistancia(1, lon, lat)
+        if distance < menor:
+            menor = distance
+            station = ";".join(estacion)
+    return station
 
 # ==============================
 # Funciones de Comparacion

@@ -87,3 +87,18 @@ def totalStations(citibike):
 
 def req1(citibike, station1, station2):
     return model.req1(citibike, station1, station2)
+
+def req6(citibike, lon1, lat1, lon2, lat2):
+    return model.req6(citibike, lon1, lat1, lon2, lat2)
+
+def estacionMasCercanaStart(mapa):
+    return model.estacionMasCercanaStart(mapa)
+
+def estacionMasCercanaEnd(mapa):
+    return model.estacionMasCercanaEnd(mapa)
+
+def tiempoRecorrido(mapa):
+    return model.tiempoRecorrido(mapa)
+
+def estacionesRecorrido(mapa):
+    return model.estacionesRecorrido(mapa)
