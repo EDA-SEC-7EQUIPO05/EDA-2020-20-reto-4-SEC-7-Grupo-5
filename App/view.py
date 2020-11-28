@@ -166,7 +166,13 @@ def optionNine():
             value = entry['value']
             print(elem['vertexA'], '-->',elem['vertexB'], 'viajes: ',value['num'])
 
-
+def optionTen():
+    respuesta = controller.req8(cont, bikeID, date)
+    print("El tiempo total de uso es: " + str(respuesta[0]))
+    print("El tiempo total estacioanda es: " + str(respuesta[1]))
+    print("Las estaciones por las que pasó son: ")
+    for i in respuesta[2]:
+        print(" " + str(i[1]))
 
 """
 Menu principal
@@ -222,8 +228,10 @@ while True:
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 10:
-        print()
-
+        date = input("Inserte una fecha: ")
+        bikeID = input("Inserte un bikeID: ")
+        executiontime = timeit.timeit(optionTen, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
 
 
     else:

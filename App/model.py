@@ -25,6 +25,7 @@
  """
 import config
 from DISClib.calculos import distances as c
+from datetime import date
 from math import inf
 from DISClib.ADT.graph import gr
 from DISClib.ADT import map as m
@@ -63,6 +64,7 @@ def newAnalyzer():
                     "llegada": None,
                     "ubication": None,
                     "trips": None
+                    "bikeID": None
 
                     }
 
@@ -81,6 +83,8 @@ def newAnalyzer():
                                         maptype='CHAINING',
                                         comparefunction=compareStations)
         citibike["ubication"] = m.newMap(numelements = 1000, maptype = 'CHAINING', loadfactor = 2, comparefunction = compareStations)
+         
+        citibike["bikeID"] = m.newMap(numelements = 50000, maptype = 'CHAINING', loadfactor = 2, comparefunction = compareStations)
         
         return citibike
     except Exception as exp:
@@ -100,6 +104,11 @@ def addTrip (citibike, trip):
     duration = int(trip["tripduration"])
     birthDate = int(trip["birth year"])
     user = trip["usertype"]
+    date = trip["starttime"]
+    date = date.split(" ")
+    date = date[0].split("-")
+    date = "".join(date)
+    bikeID = trip["bikeid"]
     if user == 'Customer':
         user = True
     else:
@@ -111,6 +120,7 @@ def addTrip (citibike, trip):
     addUbication(citibike, origin, lon_origin, lat_origin)
     addUbication(citibike, destination, lon_destination, lat_destination)
     addAgeTrip(citibike,origin,destination,age)
+    addBikeID(citibike, bikeID, date, duration)
     citibike['Num'] += 1
 
 def addStation (citibike,stationId):
@@ -192,6 +202,17 @@ def addAgeTrip(citibike, origin, destination, age):
         m.put(destinyAgeMap, rep_age,{'num': 1})
     else:
         me.getValue(m.get(destinyAgeMap, rep_age))['num'] += 1
+
+def addBikeID(citibike, bikeID, date, duration, stationID):
+    if not m.contains(citibke["bikeID"], bikeID):
+        info = [[[date, stationID]], [duration]]
+        m.put(citibke["bikeID"],  bikeID, [info, bikeID])
+    else:
+        entry = m.get(citibke["bikeID"],  bikeID)
+        value = me.getValue(entry)
+        value[0].append([date, stationID])
+        value[1].append(duration)
+
 # ==============================
 # Funciones de consulta
 # ==============================
@@ -481,8 +502,20 @@ def req7(citibike, ageRange):
     else:
         return maxEdges
 
-
-
+def req8(citibike, bikeID, date):
+    entry = m.get(citibike["bikeID"], bikeID)
+    value = me.getValue(entry)
+    info = value[0]
+    dates = info[0]
+    dates.sort()
+    min_date = min(dates)[0]
+    durations = info[1]
+    duration_summations = 0
+    for i in durations:
+        duration_summations += int(i)
+    total_days = daysBetweenDates(date, min_date)
+    time_estacionada = total_days - duration_summations
+    return [duration_summations, time_estacionada, dates]
 # ==============================
 # Funciones Helper
 # ==============================
@@ -612,6 +645,23 @@ def routeFormat(path):
         last = lt.lastElement(listPath)
         route = {'first': first, 'last': last, 'route': listPath}
         return route
+
+def daysBetweenDates(date1, date2):
+    date1 = date1.split("-")
+    a = None
+    if int(date2[4:6]) < 10:
+        a = date2[4:6].replace("0", "")
+    else:
+        a = date2[4:6]
+    b = None
+    if int(date2[6:8]) < 10:
+        b = date2[6:8].replace("0", "")
+    else:
+        b = date2[6:8]
+    d1 = date(date2[:4], a, b)
+    d2 = date(date1[0], date1[1], date1[2])
+    delta = d2 - d1
+    return delta
 # ==============================
 # Funciones de Comparacion
 # ==============================

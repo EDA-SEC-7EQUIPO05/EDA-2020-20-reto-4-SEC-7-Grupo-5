@@ -120,3 +120,6 @@ def estacionesRecorrido(mapa):
 
 def req7(citibike, ageRange):
     return model.req7(citibike, ageRange)
+
+def req8(citibike, bikeID, date):
+    return model.req8(citibike, bikeID, date)
