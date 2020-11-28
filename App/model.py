@@ -63,7 +63,7 @@ def newAnalyzer():
                     "salida": None,
                     "llegada": None,
                     "ubication": None,
-                    "trips": None
+                    "trips": None,
                     "bikeID": None
 
                     }
