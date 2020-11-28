@@ -93,8 +93,6 @@ def optionTwo2():
     print('Numero de arcos: ' + str(numedges))
 
 def optionThree():
-    station1 = input("Primera estación: ")
-    station2 = input("Segunda estación: ")
     info = controller.req1(cont, station1, station2)
     print("El número de componentes es:",info[0])
     if info[1] == True:
@@ -109,8 +107,6 @@ def optionFive():
     print("Las estaciones con más viajes de salida son: "+str(info1)+" "+"Y las estaciones con mas viajes de llegada son: "+str(info2))
 
 def optionSix():
-    station = input("Estación de salida: ")
-    tiempo = int(input("Tiempo de resistencia: "))
     info = controller.req4(cont, station, tiempo)
     infoIterator = it.newIterator(info)
     con = 1
@@ -122,7 +118,6 @@ def optionSix():
         con +=1
 
 def optionSeven():
-    age = int(input("Edad de consulta: "))
     info = controller.req5(cont, age)
     if info is None:
         print("No hay información de esa edad.")
@@ -158,7 +153,6 @@ def optionEight():
     print("El tiempo del recorrido es: " + tiempo + " segundos")
 
 def optionNine():
-    ageRange = input("rango de edades de consulta: ")
     info = controller.req7(cont, ageRange)
     if info is None:
         print("No hay información de este rango.")
@@ -191,6 +185,8 @@ while True:
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 3:
+        station1 = input("Primera estación: ")
+        station2 = input("Segunda estación: ")
         executiontime = timeit.timeit(optionThree, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
@@ -202,10 +198,13 @@ while True:
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 6:
+        station = input("Estación de salida: ")
+        tiempo = int(input("Tiempo de resistencia: "))
         executiontime = timeit.timeit(optionSix, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
     
     elif int(inputs[0]) == 7:
+        age = int(input("Edad de consulta: "))
         executiontime = timeit.timeit(optionSeven, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
@@ -218,6 +217,7 @@ while True:
         print("Tiempo de ejecución: " + str(executiontime) + " segundos")
 
     elif int(inputs[0]) == 9:
+        ageRange = input("rango de edades de consulta: ")
         executiontime = timeit.timeit(optionNine, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
