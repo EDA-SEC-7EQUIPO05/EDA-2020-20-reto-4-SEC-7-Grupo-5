@@ -24,6 +24,8 @@
  *
  """
 import config
+from DISClib.calculos import distances as c
+from math import inf
 from DISClib.ADT.graph import gr
 from DISClib.ADT import map as m
 from DISClib.ADT import list as lt
@@ -57,7 +59,10 @@ def newAnalyzer():
         citibike = {
                     'graph': None, 
                     'Num': 0,
-                    "arrivals":None
+                    "salida": None,
+                    "llegada": None,
+                    "ubication": None,
+                    "trips": None
 
                     }
 
@@ -75,7 +80,8 @@ def newAnalyzer():
         citibike['trips'] = m.newMap(numelements=1000,
                                         maptype='CHAINING',
                                         comparefunction=compareStations)
-          
+        citibike["ubication"] = m.newMap(numelements = 1000, maptype = 'CHAINING', loadfactor = 2, comparefunction = compareStations)
+        
         return citibike
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
@@ -87,6 +93,10 @@ def addTrip (citibike, trip):
     """
     origin = trip["start station id"]
     destination = trip["end station id"]
+    lat_origin = str(trip["start station latitude"])
+    lon_origin = str(trip["start station longitude"])
+    lat_destination = str(trip["end station latitude"])
+    lon_destination = str(trip["end station longitude"])
     duration = int(trip["tripduration"])
     birthDate = int(trip["birth year"])
     user = trip["usertype"]
@@ -98,6 +108,8 @@ def addTrip (citibike, trip):
     addStation(citibike,origin)
     addStation(citibike,destination)
     addConnection(citibike,origin,destination,duration,age,user)
+    addUbication(citibike, origin, lon_origin, lat_origin)
+    addUbication(citibike, destination, lon_destination, lat_destination)
     addAgeTrip(citibike,origin,destination,age)
     citibike['Num'] += 1
 
@@ -149,6 +161,10 @@ def addConnection (citibike,origin,destination,duration,age,user):
             ageMapEntry['num'] += 1
 
     return citibike
+
+def addUbication(citibike, stationId, lon, lat):
+    if not m.contains(citibike["ubication"], stationId):
+        m.put(citibike["ubication"], stationId, [lon, lat, stationId])
 
 def newAgeMap():
     ageMap = m.newMap(numelements=8,maptype='CHAINING',loadfactor=2,comparefunction=compareAges)
@@ -413,6 +429,37 @@ def req5(citibike, age):
     else:
         return False, max_out_st, max_in_st
 
+def req6(citibike, lon1, lat1, lon2, lat2):
+    mapa = {
+        "masCercanaStart": None,
+        "masCercanaEnd": None,
+        "tiempo": 0,
+        "estaciones": None
+    }
+    StartStation = estacionMasCercana(citibike, lon1, lat1)
+    EndStation = estacionMasCercana(citibike, lon2, lat2)
+    search = djk.Dijkstra(citibike["graph"], StartStation)
+    if djk.hasPathTo(search, EndStation):
+        mapa["tiempo"] = str(djk.distTo(search, EndStation))
+        mapa["estaciones"] = djk.pathTo(search, EndStation)
+    else:
+        mapa["tiempo"] = "Infinito"
+    mapa["masCercanaStart"] = StartStation
+    mapa["masCercanaEnd"] = EndStation
+    return mapa
+
+def estacionMasCercanaStart(mapa):
+    return mapa["masCercanaStart"]
+
+def estacionMasCercanaEnd(mapa):
+    return mapa["masCercanaEnd"]
+
+def tiempoRecorrido(mapa):
+    return mapa["tiempo"]
+
+def estacionesRecorrido(mapa):
+    return mapa["estaciones"]
+
 def req7(citibike, ageRange):
     maxEdges = lt.newList()
     maxEdgeNum = 0
@@ -439,6 +486,25 @@ def req7(citibike, ageRange):
 # ==============================
 # Funciones Helper
 # ==============================
+
+def estacionMasCercana(citibike, lon_user, lat_user):
+    station = None
+    ubications = m.valueSet(citibike["ubication"])
+    iterator = it.newIterator(ubications)
+    menor = inf
+    while it.hasNext(iterator):
+        ubication = it.next(iterator)
+        id_station = ubication[2]
+        lon_station = ubication[0]
+        lat_station = ubication[1]
+        lon = abs(float(lon_station) - float(lon_user))
+        lat = abs(float(lat_station) - float(lat_user))
+        distance = c.calcularDistancia(1, lon, lat)
+        if distance < menor:
+            menor = distance
+            station = id_station
+    return station
+
 def dijsktra(citibike, station):
     return djk.Dijkstra(citibike, station)
 

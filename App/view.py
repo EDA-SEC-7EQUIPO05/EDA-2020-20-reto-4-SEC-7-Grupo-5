@@ -138,6 +138,25 @@ def optionSeven():
     else:
         print("Noy hay camino entre las estaciones más populares. Estas son:", info[1],"-",info[2])
 
+def optionEight():
+    mapa = controller.req6(cont, lon1, lat1, lon2, lat2)
+    startStation = controller.estacionMasCercanaStart(mapa)
+    endStation = controller.estacionMasCercanaEnd(mapa)
+    tiempo = controller.tiempoRecorrido(mapa)
+    estaciones = controller.estacionesRecorrido(mapa)
+    print("\nLa estación de inicio más cercana es: " + startStation)
+    print("La estación de destino más cercana es: " + endStation)
+    print("Las estaciones recorridas, en orden, son: ")
+    if estaciones != None:
+        iterator = it.newIterator(estaciones)
+        while it.hasNext(iterator):
+            station = it.next(iterator)
+            station = station["vertexA"] + " --> " + station["vertexB"]
+            print(" " + station)
+    else:
+        print("No existe un recorrido")
+    print("El tiempo del recorrido es: " + tiempo + " segundos")
+
 def optionNine():
     ageRange = input("rango de edades de consulta: ")
     info = controller.req7(cont, ageRange)
@@ -191,7 +210,12 @@ while True:
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 8:
-        print()
+        lon1 = input("\nInserte la longitud geográfica del usuario: ")
+        lat1 = input("Inserte la latitud geográfica del usuario: ")
+        lon2 = input("Inserte la longitud geográfica del lugar a visitar: ")
+        lat2 = input("Inserte la latitud geográfica del lugar a visitar: ")
+        executiontime = timeit.timeit(optionEight, number=1)
+        print("Tiempo de ejecución: " + str(executiontime) + " segundos")
 
     elif int(inputs[0]) == 9:
         executiontime = timeit.timeit(optionNine, number=1)
