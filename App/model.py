@@ -26,6 +26,8 @@
 import config
 from DISClib.calculos import distances as c
 from datetime import date
+from datetime import datetime
+import datetime
 from math import inf
 from DISClib.ADT.graph import gr
 from DISClib.ADT import map as m
@@ -106,8 +108,11 @@ def addTrip (citibike, trip):
     user = trip["usertype"]
     date = trip["starttime"]
     date = date.split(" ")
-    date = date[0].split("-")
-    date = "".join(date)
+    date1 = date[0].split("-")
+    date1 = "".join(date1)
+    date2 = date[1].split(":")
+    date2 = "".join(date2)
+    date = date1 + date2
     bikeID = trip["bikeid"]
     if user == 'Customer':
         user = True
@@ -120,7 +125,7 @@ def addTrip (citibike, trip):
     addUbication(citibike, origin, lon_origin, lat_origin)
     addUbication(citibike, destination, lon_destination, lat_destination)
     addAgeTrip(citibike,origin,destination,age)
-    addBikeID(citibike, bikeID, date, duration, stationID)
+    addBikeID(citibike, bikeID, date, duration, origin)
     citibike['Num'] += 1
 
 def addStation (citibike,stationId):
@@ -204,14 +209,15 @@ def addAgeTrip(citibike, origin, destination, age):
         me.getValue(m.get(destinyAgeMap, rep_age))['num'] += 1
 
 def addBikeID(citibike, bikeID, date, duration, stationID):
-    if not m.contains(citibke["bikeID"], bikeID):
+    if not m.contains(citibike["bikeID"], bikeID):
         info = [[[date, stationID]], [duration]]
-        m.put(citibke["bikeID"],  bikeID, [info, bikeID])
+        m.put(citibike["bikeID"],  bikeID, [info, bikeID])
     else:
-        entry = m.get(citibke["bikeID"],  bikeID)
+        entry = m.get(citibike["bikeID"],  bikeID)
         value = me.getValue(entry)
-        value[0].append([date, stationID])
-        value[1].append(duration)
+        infoo = value[0]
+        infoo[0].append([date, stationID])
+        infoo[1].append(duration)
 
 # ==============================
 # Funciones de consulta
@@ -513,8 +519,16 @@ def req8(citibike, bikeID, date):
     duration_summations = 0
     for i in durations:
         duration_summations += int(i)
-    total_days = daysBetweenDates(date, min_date)
-    time_estacionada = total_days - duration_summations
+    total_time = daysBetweenDates(date, min_date)
+    total_time = total_time.replace(":", " ")
+    total_time = total_time.split(" ")
+    seconds = list(min_date)
+    del seconds[0:12]
+    seconds = "".join(seconds)
+    total_time = int(total_time[0])*24*60*60 + int(total_time[2])*60*60 + int(total_time[3])*60 + int(total_time[4]) - float(seconds)
+    time_estacionada = total_time - duration_summations
+    duration_summations = convertSeconds(duration_summations)
+    time_estacionada = convertSeconds(time_estacionada)
     return [duration_summations, time_estacionada, dates]
 # ==============================
 # Funciones Helper
@@ -648,20 +662,21 @@ def routeFormat(path):
 
 def daysBetweenDates(date1, date2):
     date1 = date1.split("-")
-    a = None
-    if int(date2[4:6]) < 10:
-        a = date2[4:6].replace("0", "")
-    else:
-        a = date2[4:6]
-    b = None
-    if int(date2[6:8]) < 10:
-        b = date2[6:8].replace("0", "")
-    else:
-        b = date2[6:8]
-    d1 = date(date2[:4], a, b)
-    d2 = date(date1[0], date1[1], date1[2])
-    delta = d2 - d1
+    start = datetime.datetime(int(date2[:4]),int(date2[4:6]),int(date2[6:8]),int(date2[8:10]),int(date2[10:12]))
+    end   = datetime.datetime(int(date1[0]),int(date1[1]),int(date1[2]),00,00)
+    delta = str(end-start)
     return delta
+
+def convertSeconds(seconds): 
+    day = seconds // (24 * 3600)
+    seconds = seconds % (24 * 3600)
+    hour = seconds // 3600
+    seconds %= 3600
+    minutes = seconds // 60
+    seconds %= 60
+    seconds = seconds
+    return "d:h:m:s-> %d:%d:%d:%d" % (day, hour, minutes, seconds)
+
 # ==============================
 # Funciones de Comparacion
 # ==============================

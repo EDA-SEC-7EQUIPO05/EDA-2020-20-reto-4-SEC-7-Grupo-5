@@ -60,17 +60,17 @@ def printMenu():
     print("\n")
     print("*******************************************")
     print("Bienvenido")
-    print("1- Inicializar Analizador")
-    print("2- Cargar información de Citibke")
-    print("3- Requerimiento 1")
-    print("4- Requerimiento 2")
-    print("5- Requerimiento 3")
-    print("6- Requerimiento 4")
-    print("7- Requerimiento 5")
-    print("8- Requerimiento 6")
-    print("9- Requerimiento 7")
-    print("10- Requerimiento 8")
-    print("0- Salir")
+    print("0- Inicializar Analizador")
+    print("1- Cargar información de Citibke")
+    print("2- Requerimiento 1")
+    print("3- Requerimiento 2")
+    print("4- Requerimiento 3")
+    print("5- Requerimiento 4")
+    print("6- Requerimiento 5")
+    print("7- Requerimiento 6")
+    print("8- Requerimiento 7")
+    print("9- Requerimiento 8")
+    print("-1- Salir")
     print("*******************************************")
 
 
@@ -181,40 +181,40 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n>')
 
-    if int(inputs[0]) == 1:
+    if int(inputs[0]) == 0:
         print("\nInicializando....")
         # cont es el controlador que se usará de acá en adelante
         cont = controller.init()
 
-    elif int(inputs[0]) == 2:
+    elif int(inputs[0]) == 1:
         executiontime = timeit.timeit(optionTwo1, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        print("Tiempo de ejecución: " + str(executiontime) + " segundos")
 
-    elif int(inputs[0]) == 3:
+    elif int(inputs[0]) == 2:
         station1 = input("Primera estación: ")
         station2 = input("Segunda estación: ")
         executiontime = timeit.timeit(optionThree, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        print("Tiempo de ejecución: " + str(executiontime) + " segundos")
 
-    elif int(inputs[0]) == 4:
+    elif int(inputs[0]) == 3:
         print()
 
-    elif int(inputs[0]) == 5:
+    elif int(inputs[0]) == 4:
         executiontime = timeit.timeit(optionFive, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        print("Tiempo de ejecución: " + str(executiontime) + " segundos")
 
-    elif int(inputs[0]) == 6:
+    elif int(inputs[0]) == 5:
         station = input("Estación de salida: ")
         tiempo = int(input("Tiempo de resistencia: "))
         executiontime = timeit.timeit(optionSix, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        print("Tiempo de ejecución: " + str(executiontime) + " segundos")
     
-    elif int(inputs[0]) == 7:
+    elif int(inputs[0]) == 6:
         age = int(input("Edad de consulta: "))
         executiontime = timeit.timeit(optionSeven, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        print("Tiempo de ejecución: " + str(executiontime) + " segundos")
 
-    elif int(inputs[0]) == 8:
+    elif int(inputs[0]) == 7:
         lon1 = input("\nInserte la longitud geográfica del usuario: ")
         lat1 = input("Inserte la latitud geográfica del usuario: ")
         lon2 = input("Inserte la longitud geográfica del lugar a visitar: ")
@@ -222,16 +222,16 @@ while True:
         executiontime = timeit.timeit(optionEight, number=1)
         print("Tiempo de ejecución: " + str(executiontime) + " segundos")
 
-    elif int(inputs[0]) == 9:
+    elif int(inputs[0]) == 8:
         ageRange = input("rango de edades de consulta: ")
         executiontime = timeit.timeit(optionNine, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        print("Tiempo de ejecución: " + str(executiontime) + " segundos")
 
-    elif int(inputs[0]) == 10:
+    elif int(inputs[0]) == 9:
         date = input("Inserte una fecha: ")
         bikeID = input("Inserte un bikeID: ")
         executiontime = timeit.timeit(optionTen, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        print("Tiempo de ejecución: " + str(executiontime) + " segundos")
 
 
     else:
