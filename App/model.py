@@ -49,15 +49,13 @@ def newAnalyzer():
    graph: Grafo para representar las rutas entre estaciones
     """
     try:
-        citibike = {
-                    'graph': None, 
-                    'Num': 0
-                    }
+        citibike = {'graph': None, 'Num': 0, "ubication": None}
 
         citibike['graph'] = gr.newGraph(datastructure='ADJ_LIST',
                                               directed=True,
                                               size=1000,
                                               comparefunction=compareStations)
+        citibike["ubication"] = m.newMap(numelements = 1000, maptype = 'CHAINING', loadfactor = 2, comparefunction = compareStations)
         return citibike
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
@@ -68,18 +66,18 @@ def addTrip (citibike, trip):
     """
     Adiciona la información de un viaje al grafo
     """
-    id_origin = str(trip["start station id"])
-    id_destination = str(trip["end station id"])
+    origin = str(trip["start station id"])
+    destination = str(trip["end station id"])
     lat_origin = str(trip["start station latitude"])
     lon_origin = str(trip["start station longitude"])
     lat_destination = str(trip["end station latitude"])
     lon_destination = str(trip["end station longitude"])
-    origin = id_origin + ";" + lon_origin +  ";" + lat_origin
-    destination = id_destination + ";" + lon_destination +  ";" + lat_destination
     duration = int(trip["tripduration"])
     addStation(citibike, origin)
     addStation(citibike, destination)
     addConnection(citibike, origin, destination, duration)
+    addUbication(citibike, origin, lon_origin, lat_origin)
+    addUbication(citibike, destination, lon_destination, lat_destination)
     citibike['Num'] += 1
 
 def addStation (citibike,stationId):
@@ -102,6 +100,10 @@ def addConnection (citibike,origin,destination,duration):
         edge['weight'][0] = (edge['weight'][0]*edge['weight'][1] + duration)/(edge['weight'][1] + 1)
         edge['weight'][1] += 1
     return citibike
+
+def addUbication(citibike, stationId, lon, lat):
+    if not m.contains(citibike["ubication"], stationId):
+        m.put(citibike["ubication"], stationId, [lon, lat, stationId])
 
 # ==============================
 # Funciones de consulta
@@ -145,8 +147,8 @@ def req6(citibike, lon1, lat1, lon2, lat2):
         mapa["estaciones"] = djk.pathTo(search, EndStation)
     else:
         mapa["tiempo"] = "Infinito"
-    mapa["masCercanaStart"] = StartStation.split(";")[0]
-    mapa["masCercanaEnd"] = EndStation.split(";")[0]
+    mapa["masCercanaStart"] = StartStation
+    mapa["masCercanaEnd"] = EndStation
     return mapa
 
 def estacionMasCercanaStart(mapa):
@@ -167,29 +169,27 @@ def estacionesRecorrido(mapa):
 
 def estacionMasCercana(citibike, lon_user, lat_user):
     station = None
-    estaciones = gr.vertices(citibike['graph'])
-    iterator = it.newIterator(estaciones)
+    ubications = m.valueSet(citibike["ubication"])
+    iterator = it.newIterator(ubications)
     menor = inf
     while it.hasNext(iterator):
-        estacion = it.next(iterator)
-        estacion = estacion.split(";")
-        id_station = estacion[0]
-        lon_station = estacion[1]
-        lat_station = estacion[2]
+        ubication = it.next(iterator)
+        id_station = ubication[2]
+        lon_station = ubication[0]
+        lat_station = ubication[1]
         lon = abs(float(lon_station) - float(lon_user))
         lat = abs(float(lat_station) - float(lat_user))
         distance = c.calcularDistancia(1, lon, lat)
         if distance < menor:
             menor = distance
-            station = ";".join(estacion)
+            station = id_station
     return station
 
 # ==============================
 # Funciones de Comparacion
 # ==============================
 
-def compareStations (stop,
-keyvaluestop):
+def compareStations (stop, keyvaluestop):
     """
     Compara dos estaciones
     """

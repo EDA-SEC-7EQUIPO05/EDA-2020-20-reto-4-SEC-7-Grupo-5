@@ -110,7 +110,7 @@ def optionEight():
         iterator = it.newIterator(estaciones)
         while it.hasNext(iterator):
             station = it.next(iterator)
-            station = station["vertexA"].split(";")[0] + " --> " + station["vertexB"].split(";")[0]
+            station = station["vertexA"] + " --> " + station["vertexB"]
             print(" " + station)
     else:
         print("No existe un recorrido")
