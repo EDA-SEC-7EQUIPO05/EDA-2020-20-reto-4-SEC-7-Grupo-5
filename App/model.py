@@ -120,7 +120,7 @@ def addTrip (citibike, trip):
     addUbication(citibike, origin, lon_origin, lat_origin)
     addUbication(citibike, destination, lon_destination, lat_destination)
     addAgeTrip(citibike,origin,destination,age)
-    addBikeID(citibike, bikeID, date, duration)
+    addBikeID(citibike, bikeID, date, duration, stationID)
     citibike['Num'] += 1
 
 def addStation (citibike,stationId):
