@@ -258,7 +258,7 @@ def containsVertex(graph, vertex):
         return alt.containsVertex(graph, vertex)
 
 
-def adjacents(graph, vertex):
+def adjacents(graph, vertex, cmpfunction=None):
     """
     Retorna una lista con todos los vertices adyacentes al vertice vertex
 
@@ -272,7 +272,7 @@ def adjacents(graph, vertex):
         Exception
     """
     if (graph['type'] == "ADJ_LIST"):
-        return alt.adjacents(graph, vertex)
+        return alt.adjacents(graph, vertex, cmpfunction)
 
 
 def adjacentEdges(graph, vertex):

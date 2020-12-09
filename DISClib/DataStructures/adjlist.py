@@ -346,7 +346,7 @@ def addEdge(graph, vertexa, vertexb, weight=0, ageMap=None):
         error.reraise(exp, 'ajlist:addedge')
 
 
-def adjacents(graph, vertex):
+def adjacents(graph, vertex, cmpfunction=None):
     """
     Retorna una lista con todos los vertices adyacentes al vertice vertex
 
@@ -362,7 +362,7 @@ def adjacents(graph, vertex):
     try:
         element = map.get(graph['vertices'], vertex)
         lst = element['value']
-        lstresp = lt.newList()
+        lstresp = lt.newList(cmpfunction=cmpfunction)
         iter = it.newIterator(lst)
         while (it.hasNext(iter)):
             edge = it.next(iter)

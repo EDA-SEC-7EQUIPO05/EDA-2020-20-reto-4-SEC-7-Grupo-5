@@ -245,7 +245,7 @@ def containsVertex(graph, vertex):
     return gr.containsVertex(graph, vertex)
 
 
-def adjacents(graph, vertex):
+def adjacents(graph, vertex, cmpfunction=None):
     """
     Retorna una lista con todos los vertices adyacentes al vertice vertex
 
@@ -258,7 +258,7 @@ def adjacents(graph, vertex):
     Raises:
         Exception
     """
-    return gr.adjacents(graph, vertex)
+    return gr.adjacents(graph, vertex, cmpfunction)
 
 
 def adjacentEdges(graph, vertex):

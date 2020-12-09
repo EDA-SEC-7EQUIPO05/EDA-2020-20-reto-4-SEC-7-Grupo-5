@@ -26,6 +26,7 @@
 
 import config as cf
 from App import model
+from DISClib.ADT import map
 import csv
 import os
 
@@ -87,13 +88,21 @@ def totalStations(citibike):
     return model.totalStations(citibike)
 
 def req1(citibike, station1, station2):
-    return model.req1(citibike, station1, station2)
+    return model.req1(citibike, id_name(citibike, station1), id_name(citibike, station2))
+
+def req2(citibike, station, low_time, high_time):
+    return model.req2(citibike, id_name(citibike, station), low_time, high_time)
 
 def req4(citibike, station, time):
-    return model.req4(citibike, station, time)
+    return model.req4(citibike, id_name(citibike, station), time)
 
 def req5(citibike, age):
     return model.req5(citibike, age)
 
 def req7(citibike, ageRange):
     return model.req7(citibike, ageRange)
+
+def id_name(citibike, id):
+    entry = map.get(citibike["id-name"], id)
+    name = entry["value"]
+    return name

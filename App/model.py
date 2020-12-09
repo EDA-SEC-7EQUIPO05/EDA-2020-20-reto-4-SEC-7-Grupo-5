@@ -53,7 +53,8 @@ def newAnalyzer():
         citibike = {
                     'graph': None,
                     'Num': 0,
-                    'trips': None
+                    'trips': None,
+                    'id-name': None
                     }
 
         citibike['graph'] = gr.newGraph(datastructure='ADJ_LIST',
@@ -62,6 +63,10 @@ def newAnalyzer():
                                               comparefunction=compareStations)
 
         citibike['trips'] = m.newMap(numelements=1000,
+                                        maptype='CHAINING',
+                                        comparefunction=compareStations)
+                                        
+        citibike['id-name'] = m.newMap(numelements=1000,
                                         maptype='CHAINING',
                                         comparefunction=compareStations)
         return citibike
@@ -73,23 +78,26 @@ def newAnalyzer():
 def addTrip (citibike, trip):
     """
     """
-    origin = trip["start station id"]
-    destination = trip["end station id"]
-    duration = int(trip["tripduration"])
-    birthDate = int(trip['birth year'])
-    user = trip["usertype"]
-    if user == 'Customer':
-        user = True
-    else:
-        user = False
-    age = ageCalculator(birthDate)
-    addStation(citibike,origin)
-    addStation(citibike,destination)
-    addConnection(citibike,origin,destination,duration,age, user)
-    addAgeTrip(citibike, origin, destination, age)
-    citibike['Num'] += 1
+    originid = trip["start station id"]
+    destinationid = trip["end station id"]
+    origin = trip["start station name"]
+    destination = trip["end station name"]
+    if origin != destination:
+        duration = int(trip["tripduration"])
+        birthDate = int(trip['birth year'])
+        user = trip["usertype"]
+        if user == 'Customer':
+            user = True
+        else:
+            user = False
+        age = ageCalculator(birthDate)
+        addStation(citibike,origin,originid)
+        addStation(citibike,destination, destinationid)
+        addConnection(citibike,origin,destination,duration,age, user)
+        addAgeTrip(citibike, origin, destination, age)
+        citibike['Num'] += 1
 
-def addStation (citibike,stationId):
+def addStation (citibike,stationId, stationId_2):
     """
     Adiciona una estación como un vertice del grafo
     """
@@ -99,6 +107,8 @@ def addStation (citibike,stationId):
         originAgeMap = m.newMap(numelements=10, maptype='CHAINING', comparefunction=compareAges)
         destinyAgeMap = m.newMap(numelements=10, maptype='CHAINING', comparefunction=compareAges)
         m.put(citibike["trips"], stationId, {'salidas': {'num': 0, 'age': originAgeMap}, 'llegadas':  {'num': 0, 'age': destinyAgeMap}})
+    if not m.contains(citibike["id-name"], stationId_2):
+        m.put(citibike["id-name"], stationId_2, stationId)
     return citibike
 
 def addConnection (citibike,origin,destination,duration,age, user):
@@ -175,6 +185,17 @@ def numClusters(clusters):
 def sameCluster(clusters, station1, station2):
     return scc.stronglyConnected(clusters, station1, station2)
 
+def req2(citibike, station, low_time, high_time):
+    kosaraju = scc.KosarajuSCC(citibike['graph'])
+    rev_citibike = scc.reverseGraph(citibike['graph'])
+    adjs = gr.adjacents(rev_citibike, station, cmpfunction=compareVertex)
+    if lt.isEmpty(adjs):
+        return None
+    component = me.getValue(m.get(kosaraju['idscc'], station))
+    paths = circularPathSearch(citibike['graph'], kosaraju, component, station, adjs, low_time, high_time)
+    return paths
+
+
 
 def req4(citibike, station, time):
     search = dfsParcial(citibike["graph"], station, time)
@@ -250,6 +271,60 @@ def req7(citibike, ageRange):
 def dijsktra(citibike, station):
     return djk.Dijkstra(citibike, station)
 
+def circularPathSearch(graph, kosaraju, component, station, adjacents, low_time, high_time):
+    circularPaths = lt.newList()
+    verts = m.keySet(kosaraju['idscc'])
+    vertIterator = it.newIterator(verts)
+    while it.hasNext(vertIterator):
+        elem = it.next(vertIterator)
+        comp = me.getValue(m.get(kosaraju['idscc'], elem))
+        edge = gr.getEdge(graph, station, elem)
+        if comp == component and edge is not None:
+            search = circularDepthSearch(graph, kosaraju, station, elem, component, adjacents, high_time)
+            adjIterator = it.newIterator(adjacents)
+            while it.hasNext(adjIterator):
+                adj = it.next(adjIterator)
+                entry = m.get(search['visited'], adj)
+                if entry is not None:
+                    time = me.getValue(entry)['time'] + gr.getEdge(graph, adj, station)['weight'][0]
+                    if time >= low_time and time <= high_time:
+                        lt.addLast(circularPaths,routeBuild_2(graph, search, station, adj, m.keySet(search['visited']), control=True))
+    return circularPaths
+
+def circularDepthSearch(graph, kosaraju, source, station, component, adjacents, high_time):
+    search = {
+                  'visited': None,
+                  'source': source
+                  }
+    search['visited'] = m.newMap(numelements=gr.numVertices(graph),
+                                       maptype='PROBING',
+                                       comparefunction=graph['comparefunction']
+                                       )
+    m.put(search['visited'], source, {'marked': True, 'edgeTo': None, 'time': 0})
+    edge = gr.getEdge(graph, source, station)
+    if edge is not None:
+        m.put(search['visited'], station, {'marked': True, 'edgeTo': source, 'time': edge['weight'][0]})
+        vertexCircularDepthSearch(search, kosaraju, component, graph, adjacents, station, high_time)
+        return search
+    
+
+def vertexCircularDepthSearch(search, kosaraju, component, graph, adjacents, station, high_time):
+    adjlst = gr.adjacents(graph, station)
+    adjslstiter = it.newIterator(adjlst)
+    while (it.hasNext(adjslstiter)):
+            w = it.next(adjslstiter)
+            if me.getValue(m.get(kosaraju['idscc'], w)) == component:
+                visited = m.get(search['visited'], w)
+                if visited is None:
+                    root = me.getValue(m.get(search['visited'], station))
+                    temp = gr.getEdge(graph, station, w)["weight"][0]
+                    if (root['time'] + temp+20) <= high_time:
+                        m.put(search['visited'],
+                            w, {'marked': True, 'edgeTo': station, 'time': (root["time"] + temp+20)})
+                        if lt.isPresent(adjacents, w):
+                            continue
+                        vertexCircularDepthSearch(search, kosaraju, component, graph, adjacents, w, high_time)
+
 def dfsParcial(graph, source, time):
     search = {
                   'source': source,
@@ -294,6 +369,22 @@ def vertexDepthSearch(search, graph, vertex, time, source):
                             w, {'marked': True, 'edgeTo': vertex, 'time': (root["time"] + temp)})
                         vertexDepthSearch(search, graph, w, time, False)
     return search
+
+def routeBuild_2(graph, search, vertexA, vertexB, keys, control=False):
+    visited = search["visited"]
+    iterator = it.newIterator(keys)
+    ruta = ''
+    if vertexA == vertexB:
+        return ruta
+    while it.hasNext(iterator):
+        elemento = it.next(iterator)
+        if me.getValue(m.get(visited, vertexB))["edgeTo"] == elemento:
+            ruta = elemento + " --> " + vertexB + " costo: " + str(gr.getEdge(graph, elemento, vertexB)["weight"][0]) + "\n"+ruta
+            ruta = routeBuild_2(graph, search, vertexA, elemento, keys) + ruta
+            break
+    if control:
+        ruta += vertexB + " --> " + vertexA + " costo: " + str(gr.getEdge(graph, vertexB, vertexA)["weight"][0]) + "\n"
+    return ruta
 
 def routeBuild(graph, search, vertexA, vertexB, keys):
     visited = search["visited"]
@@ -379,6 +470,14 @@ def compareAges(age, keyvalueage):
     if age == agecode:
         return 0
     elif age > agecode:
+        return 1
+    else:
+        return -1
+
+def compareVertex(ver1, ver2):
+    if ver1 == ver2:
+        return 0
+    elif ver1 > ver2:
         return 1
     else:
         return -1

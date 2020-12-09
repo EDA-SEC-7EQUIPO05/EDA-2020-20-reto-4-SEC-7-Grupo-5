@@ -101,6 +101,23 @@ def optionThree():
     else:
          print("Las estaciones "+station1+" y "+station2+" no estan conectadas.")
 
+def optionFour():
+    station = input("Estación: ")
+    low_time = int(input("Timepo mínimo: "))
+    high_time = int(input("Timepo máximo: "))
+    info = controller.req2(cont, station, low_time, high_time)
+    if info is None:
+        print("La estación no tiene rutas circulares.")
+    else:
+        infoIterator = it.newIterator(info)
+        con = 1
+        while it.hasNext(infoIterator):
+            elemento = it.next(infoIterator)
+            print('Opción', con)
+            print(elemento)
+            print('*************************')
+            con +=1
+
 def optionSix():
     station = input("Estación de salida: ")
     tiempo = int(input("Tiempo de resistencia: "))
@@ -172,7 +189,8 @@ while True:
         print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 4:
-        print()
+        executiontime = timeit.timeit(optionFour, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
 
     elif int(inputs[0]) == 5:
         print()
