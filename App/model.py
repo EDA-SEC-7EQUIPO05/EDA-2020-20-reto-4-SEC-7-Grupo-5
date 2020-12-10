@@ -24,6 +24,11 @@
  *
  """
 import config
+from DISClib.calculos import distances as c
+from datetime import date
+from datetime import datetime
+import datetime
+from math import inf
 from DISClib.ADT.graph import gr
 from DISClib.ADT import map as m
 from DISClib.ADT import list as lt
@@ -57,7 +62,11 @@ def newAnalyzer():
         citibike = {
                     'graph': None, 
                     'Num': 0,
-                    "arrivals":None
+                    "salida": None,
+                    "llegada": None,
+                    "ubication": None,
+                    "trips": None,
+                    "bikeID": None
 
                     }
 
@@ -75,7 +84,10 @@ def newAnalyzer():
         citibike['trips'] = m.newMap(numelements=1000,
                                         maptype='CHAINING',
                                         comparefunction=compareStations)
-          
+        citibike["ubication"] = m.newMap(numelements = 1000, maptype = 'CHAINING', loadfactor = 2, comparefunction = compareStations)
+         
+        citibike["bikeID"] = m.newMap(numelements = 50000, maptype = 'CHAINING', loadfactor = 2, comparefunction = compareStations)
+        
         return citibike
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
@@ -87,9 +99,21 @@ def addTrip (citibike, trip):
     """
     origin = trip["start station id"]
     destination = trip["end station id"]
+    lat_origin = str(trip["start station latitude"])
+    lon_origin = str(trip["start station longitude"])
+    lat_destination = str(trip["end station latitude"])
+    lon_destination = str(trip["end station longitude"])
     duration = int(trip["tripduration"])
     birthDate = int(trip["birth year"])
     user = trip["usertype"]
+    date = trip["starttime"]
+    date = date.split(" ")
+    date1 = date[0].split("-")
+    date1 = "".join(date1)
+    date2 = date[1].split(":")
+    date2 = "".join(date2)
+    date = date1 + date2
+    bikeID = trip["bikeid"]
     if user == 'Customer':
         user = True
     else:
@@ -97,8 +121,15 @@ def addTrip (citibike, trip):
     age = ageCalculator(birthDate)
     addStation(citibike,origin)
     addStation(citibike,destination)
+<<<<<<< HEAD
     addConnection(citibike,origin,destination,duration,user,age)
+=======
+    addConnection(citibike,origin,destination,duration,age,user)
+    addUbication(citibike, origin, lon_origin, lat_origin)
+    addUbication(citibike, destination, lon_destination, lat_destination)
+>>>>>>> 3e8ad06e2c1b68f2cb67ada2b6a4871b420f0d1a
     addAgeTrip(citibike,origin,destination,age)
+    addBikeID(citibike, bikeID, date, duration, origin, destination)
     citibike['Num'] += 1
 
 def addStation (citibike,stationId):
@@ -117,7 +148,11 @@ def addStation (citibike,stationId):
         m.put(citibike["trips"], stationId, {'salidas': {'num': 0, 'age': originAgeMap}, 'llegadas':  {'num': 0, 'age': destinyAgeMap}})
     return citibike
 
+<<<<<<< HEAD
 def addConnection (citibike,origin,destination,duration,user,age):
+=======
+def addConnection (citibike,origin,destination,duration,age,user):
+>>>>>>> 3e8ad06e2c1b68f2cb67ada2b6a4871b420f0d1a
     """
     Adiciona un arco entre dos estaciones 
     """
@@ -150,6 +185,10 @@ def addConnection (citibike,origin,destination,duration,user,age):
 
     return citibike
 
+def addUbication(citibike, stationId, lon, lat):
+    if not m.contains(citibike["ubication"], stationId):
+        m.put(citibike["ubication"], stationId, [lon, lat, stationId])
+
 def newAgeMap():
     ageMap = m.newMap(numelements=8,maptype='CHAINING',loadfactor=2,comparefunction=compareAges)
     for i in range(5,75,10):
@@ -176,6 +215,18 @@ def addAgeTrip(citibike, origin, destination, age):
         m.put(destinyAgeMap, rep_age,{'num': 1})
     else:
         me.getValue(m.get(destinyAgeMap, rep_age))['num'] += 1
+
+def addBikeID(citibike, bikeID, date, duration, stationID1, stationID2):
+    if not m.contains(citibike["bikeID"], bikeID):
+        info = [[[date, str(stationID1) + " --> " + str(stationID2)]], [duration]]
+        m.put(citibike["bikeID"],  bikeID, [info, bikeID])
+    else:
+        entry = m.get(citibike["bikeID"],  bikeID)
+        value = me.getValue(entry)
+        infoo = value[0]
+        infoo[0].append([date, str(stationID1) + " --> " + str(stationID2)])
+        infoo[1].append(duration)
+
 # ==============================
 # Funciones de consulta
 # ==============================
@@ -413,6 +464,37 @@ def req5(citibike, age):
     else:
         return False, max_out_st, max_in_st
 
+def req6(citibike, lon1, lat1, lon2, lat2):
+    mapa = {
+        "masCercanaStart": None,
+        "masCercanaEnd": None,
+        "tiempo": 0,
+        "estaciones": None
+    }
+    StartStation = estacionMasCercana(citibike, lon1, lat1)
+    EndStation = estacionMasCercana(citibike, lon2, lat2)
+    search = djk.Dijkstra(citibike["graph"], StartStation)
+    if djk.hasPathTo(search, EndStation):
+        mapa["tiempo"] = str(djk.distTo(search, EndStation))
+        mapa["estaciones"] = djk.pathTo(search, EndStation)
+    else:
+        mapa["tiempo"] = "Infinito"
+    mapa["masCercanaStart"] = StartStation
+    mapa["masCercanaEnd"] = EndStation
+    return mapa
+
+def estacionMasCercanaStart(mapa):
+    return mapa["masCercanaStart"]
+
+def estacionMasCercanaEnd(mapa):
+    return mapa["masCercanaEnd"]
+
+def tiempoRecorrido(mapa):
+    return mapa["tiempo"]
+
+def estacionesRecorrido(mapa):
+    return mapa["estaciones"]
+
 def req7(citibike, ageRange):
     maxEdges = lt.newList()
     maxEdgeNum = 0
@@ -434,11 +516,50 @@ def req7(citibike, ageRange):
     else:
         return maxEdges
 
-
-
+def req8(citibike, bikeID, date):
+    entry = m.get(citibike["bikeID"], bikeID)
+    value = me.getValue(entry)
+    info = value[0]
+    dates = info[0]
+    dates.sort()
+    min_date = min(dates)[0]
+    durations = info[1]
+    duration_summations = 0
+    for i in durations:
+        duration_summations += int(i)
+    total_time = daysBetweenDates(date, min_date)
+    total_time = total_time.replace(":", " ")
+    total_time = total_time.split(" ")
+    seconds = list(min_date)
+    del seconds[0:12]
+    seconds = "".join(seconds)
+    total_time = int(total_time[0])*24*60*60 + int(total_time[2])*60*60 + int(total_time[3])*60 + int(total_time[4]) - float(seconds)
+    time_estacionada = total_time - duration_summations
+    duration_summations = convertSeconds(duration_summations)
+    time_estacionada = convertSeconds(time_estacionada)
+    return [duration_summations, time_estacionada, dates]
 # ==============================
 # Funciones Helper
 # ==============================
+
+def estacionMasCercana(citibike, lon_user, lat_user):
+    station = None
+    ubications = m.valueSet(citibike["ubication"])
+    iterator = it.newIterator(ubications)
+    menor = inf
+    while it.hasNext(iterator):
+        ubication = it.next(iterator)
+        id_station = ubication[2]
+        lon_station = ubication[0]
+        lat_station = ubication[1]
+        lon = abs(float(lon_station) - float(lon_user))
+        lat = abs(float(lat_station) - float(lat_user))
+        distance = c.calcularDistancia(1, lon, lat)
+        if distance < menor:
+            menor = distance
+            station = id_station
+    return station
+
 def dijsktra(citibike, station):
     return djk.Dijkstra(citibike, station)
 
@@ -546,6 +667,24 @@ def routeFormat(path):
         last = lt.lastElement(listPath)
         route = {'first': first, 'last': last, 'route': listPath}
         return route
+
+def daysBetweenDates(date1, date2):
+    date1 = date1.split("-")
+    start = datetime.datetime(int(date2[:4]),int(date2[4:6]),int(date2[6:8]),int(date2[8:10]),int(date2[10:12]))
+    end   = datetime.datetime(int(date1[0]),int(date1[1]),int(date1[2]),00,00)
+    delta = str(end-start)
+    return delta
+
+def convertSeconds(seconds): 
+    day = seconds // (24 * 3600)
+    seconds = seconds % (24 * 3600)
+    hour = seconds // 3600
+    seconds %= 3600
+    minutes = seconds // 60
+    seconds %= 60
+    seconds = seconds
+    return "d:h:m:s-> %d:%d:%d:%d" % (day, hour, minutes, seconds)
+
 # ==============================
 # Funciones de Comparacion
 # ==============================

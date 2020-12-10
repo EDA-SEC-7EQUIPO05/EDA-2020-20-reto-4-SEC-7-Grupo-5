@@ -60,17 +60,17 @@ def printMenu():
     print("\n")
     print("*******************************************")
     print("Bienvenido")
-    print("1- Inicializar Analizador")
-    print("2- Cargar información de Citibke")
-    print("3- Requerimiento 1")
-    print("4- Requerimiento 2")
-    print("5- Requerimiento 3")
-    print("6- Requerimiento 4")
-    print("7- Requerimiento 5")
-    print("8- Requerimiento 6")
-    print("9- Requerimiento 7")
-    print("10- Requerimiento 8")
-    print("0- Salir")
+    print("0- Inicializar Analizador")
+    print("1- Cargar información de Citibke")
+    print("2- Requerimiento 1")
+    print("3- Requerimiento 2")
+    print("4- Requerimiento 3")
+    print("5- Requerimiento 4")
+    print("6- Requerimiento 5")
+    print("7- Requerimiento 6")
+    print("8- Requerimiento 7")
+    print("9- Requerimiento 8")
+    print("-1- Salir")
     print("*******************************************")
 
 
@@ -93,8 +93,6 @@ def optionTwo2():
     print('Numero de arcos: ' + str(numedges))
 
 def optionThree():
-    station1 = input("Primera estación: ")
-    station2 = input("Segunda estación: ")
     info = controller.req1(cont, station1, station2)
     print("El número de componentes es:",info[0])
     if info[1] == True:
@@ -109,8 +107,6 @@ def optionFive():
     print("Las estaciones con más viajes de salida son: "+str(info1)+" "+"Y las estaciones con mas viajes de llegada son: "+str(info2))
 
 def optionSix():
-    station = input("Estación de salida: ")
-    tiempo = int(input("Tiempo de resistencia: "))
     info = controller.req4(cont, station, tiempo)
     infoIterator = it.newIterator(info)
     con = 1
@@ -122,7 +118,6 @@ def optionSix():
         con +=1
 
 def optionSeven():
-    age = int(input("Edad de consulta: "))
     info = controller.req5(cont, age)
     if info is None:
         print("No hay información de esa edad.")
@@ -138,8 +133,26 @@ def optionSeven():
     else:
         print("Noy hay camino entre las estaciones más populares. Estas son:", info[1],"-",info[2])
 
+def optionEight():
+    mapa = controller.req6(cont, lon1, lat1, lon2, lat2)
+    startStation = controller.estacionMasCercanaStart(mapa)
+    endStation = controller.estacionMasCercanaEnd(mapa)
+    tiempo = controller.tiempoRecorrido(mapa)
+    estaciones = controller.estacionesRecorrido(mapa)
+    print("\nLa estación de inicio más cercana es: " + startStation)
+    print("La estación de destino más cercana es: " + endStation)
+    print("Las estaciones recorridas, en orden, son: ")
+    if estaciones != None:
+        iterator = it.newIterator(estaciones)
+        while it.hasNext(iterator):
+            station = it.next(iterator)
+            station = station["vertexA"] + " --> " + station["vertexB"]
+            print(" " + station)
+    else:
+        print("No existe un recorrido")
+    print("El tiempo del recorrido es: " + tiempo + " segundos")
+
 def optionNine():
-    ageRange = input("rango de edades de consulta: ")
     info = controller.req7(cont, ageRange)
     if info is None:
         print("No hay información de este rango.")
@@ -153,7 +166,13 @@ def optionNine():
             value = entry['value']
             print(elem['vertexA'], '-->',elem['vertexB'], 'viajes: ',value['num'])
 
-
+def optionTen():
+    respuesta = controller.req8(cont, bikeID, date)
+    print("El tiempo total de uso es: " + str(respuesta[0]))
+    print("El tiempo total estacioanda es: " + str(respuesta[1]))
+    print("Las estaciones por las que pasó son: ")
+    for i in respuesta[2]:
+        print(" " + str(i[1]))
 
 """
 Menu principal
@@ -162,44 +181,57 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n>')
 
-    if int(inputs[0]) == 1:
+    if int(inputs[0]) == 0:
         print("\nInicializando....")
         # cont es el controlador que se usará de acá en adelante
         cont = controller.init()
 
-    elif int(inputs[0]) == 2:
+    elif int(inputs[0]) == 1:
         executiontime = timeit.timeit(optionTwo1, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        print("Tiempo de ejecución: " + str(executiontime) + " segundos")
+
+    elif int(inputs[0]) == 2:
+        station1 = input("Primera estación: ")
+        station2 = input("Segunda estación: ")
+        executiontime = timeit.timeit(optionThree, number=1)
+        print("Tiempo de ejecución: " + str(executiontime) + " segundos")
 
     elif int(inputs[0]) == 3:
-        executiontime = timeit.timeit(optionThree, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        print()
 
     elif int(inputs[0]) == 4:
-        print()
+        executiontime = timeit.timeit(optionFive, number=1)
+        print("Tiempo de ejecución: " + str(executiontime) + " segundos")
 
     elif int(inputs[0]) == 5:
-        executiontime = timeit.timeit(optionFive, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
-
-    elif int(inputs[0]) == 6:
+        station = input("Estación de salida: ")
+        tiempo = int(input("Tiempo de resistencia: "))
         executiontime = timeit.timeit(optionSix, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        print("Tiempo de ejecución: " + str(executiontime) + " segundos")
     
-    elif int(inputs[0]) == 7:
+    elif int(inputs[0]) == 6:
+        age = int(input("Edad de consulta: "))
         executiontime = timeit.timeit(optionSeven, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
+        print("Tiempo de ejecución: " + str(executiontime) + " segundos")
+
+    elif int(inputs[0]) == 7:
+        lon1 = input("\nInserte la longitud geográfica del usuario: ")
+        lat1 = input("Inserte la latitud geográfica del usuario: ")
+        lon2 = input("Inserte la longitud geográfica del lugar a visitar: ")
+        lat2 = input("Inserte la latitud geográfica del lugar a visitar: ")
+        executiontime = timeit.timeit(optionEight, number=1)
+        print("Tiempo de ejecución: " + str(executiontime) + " segundos")
 
     elif int(inputs[0]) == 8:
-        print()
+        ageRange = input("rango de edades de consulta: ")
+        executiontime = timeit.timeit(optionNine, number=1)
+        print("Tiempo de ejecución: " + str(executiontime) + " segundos")
 
     elif int(inputs[0]) == 9:
-        executiontime = timeit.timeit(optionNine, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
-
-    elif int(inputs[0]) == 10:
-        print()
-
+        date = input("Inserte una fecha: ")
+        bikeID = input("Inserte un bikeID: ")
+        executiontime = timeit.timeit(optionTen, number=1)
+        print("Tiempo de ejecución: " + str(executiontime) + " segundos")
 
 
     else:

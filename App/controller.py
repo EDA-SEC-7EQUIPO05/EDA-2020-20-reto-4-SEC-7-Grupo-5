@@ -103,5 +103,23 @@ def req4(citibike, station, time):
 def req5(citibike, age):
     return model.req5(citibike, age)
 
+def req6(citibike, lon1, lat1, lon2, lat2):
+    return model.req6(citibike, lon1, lat1, lon2, lat2)
+
+def estacionMasCercanaStart(mapa):
+    return model.estacionMasCercanaStart(mapa)
+
+def estacionMasCercanaEnd(mapa):
+    return model.estacionMasCercanaEnd(mapa)
+
+def tiempoRecorrido(mapa):
+    return model.tiempoRecorrido(mapa)
+
+def estacionesRecorrido(mapa):
+    return model.estacionesRecorrido(mapa)
+
 def req7(citibike, ageRange):
     return model.req7(citibike, ageRange)
+
+def req8(citibike, bikeID, date):
+    return model.req8(citibike, bikeID, date)
