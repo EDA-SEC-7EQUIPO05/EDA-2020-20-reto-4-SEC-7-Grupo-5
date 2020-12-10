@@ -149,7 +149,7 @@ def optionNine():
         while it.hasNext(infoIterator):
             elem = it.next(infoIterator)
             ma = elem['age']
-            entry = map.get(ma, ageRange)
+            entry = m.get(ma, ageRange)
             value = entry['value']
             print(elem['vertexA'], '-->',elem['vertexB'], 'viajes: ',value['num'])
 
