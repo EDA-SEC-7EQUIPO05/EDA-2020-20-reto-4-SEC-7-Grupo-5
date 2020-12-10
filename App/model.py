@@ -121,13 +121,9 @@ def addTrip (citibike, trip):
     age = ageCalculator(birthDate)
     addStation(citibike,origin)
     addStation(citibike,destination)
-<<<<<<< HEAD
-    addConnection(citibike,origin,destination,duration,user,age)
-=======
     addConnection(citibike,origin,destination,duration,age,user)
     addUbication(citibike, origin, lon_origin, lat_origin)
     addUbication(citibike, destination, lon_destination, lat_destination)
->>>>>>> 3e8ad06e2c1b68f2cb67ada2b6a4871b420f0d1a
     addAgeTrip(citibike,origin,destination,age)
     addBikeID(citibike, bikeID, date, duration, origin, destination)
     citibike['Num'] += 1
@@ -148,11 +144,7 @@ def addStation (citibike,stationId):
         m.put(citibike["trips"], stationId, {'salidas': {'num': 0, 'age': originAgeMap}, 'llegadas':  {'num': 0, 'age': destinyAgeMap}})
     return citibike
 
-<<<<<<< HEAD
-def addConnection (citibike,origin,destination,duration,user,age):
-=======
 def addConnection (citibike,origin,destination,duration,age,user):
->>>>>>> 3e8ad06e2c1b68f2cb67ada2b6a4871b420f0d1a
     """
     Adiciona un arco entre dos estaciones 
     """
